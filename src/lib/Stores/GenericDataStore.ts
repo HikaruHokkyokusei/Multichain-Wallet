@@ -1,5 +1,8 @@
+import type { Writable } from "svelte/store";
 import { writable } from "svelte/store";
 
-export const genericDataStore = writable({
-    "userDataPath": ""
-});
+interface GenericData {
+    "userDataPath"?: string
+}
+
+export const genericDataStore: Writable<GenericData> = writable({});

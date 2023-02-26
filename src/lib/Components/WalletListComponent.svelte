@@ -1,8 +1,11 @@
 <script lang="ts">
-    let walletList = [
+    import { walletListStore } from "../Stores/WalletListStore";
+
+    // TODO: Remove this assignment...
+    $walletListStore = [
         {
             "name": "Wallet 1",
-            "currencies": [
+            "tokens": [
                 {
                     "symbol": "ETH",
                     "amount": 1534530000000000000,
@@ -10,7 +13,7 @@
                 }
             ]
         }
-    ];
+    ]
 </script>
 
 <div class="CenterColumnFlex Wrapper" style="background-color: #404258;">
@@ -18,11 +21,11 @@
         Wallets
     </div>
     <div class="CenterColumnFlex WalletBody">
-        {#each walletList as { name, currencies }}
+        {#each $walletListStore as { name, tokens }}
             <div class="WalletElement">
                 <div class="WalletNameHolder">{name}</div>
                 <div style="height: 5px; width: 100%;"></div>
-                {#each currencies as { symbol, amount, decimals }}
+                {#each tokens as { symbol, amount, decimals }}
                     <div class="CenterRowFlex WalletChainDataHolder">
                         <div>{symbol}</div>
                         <div>{(amount / (10 ** decimals)).toFixed(3)}</div>

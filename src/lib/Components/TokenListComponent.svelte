@@ -1,4 +1,5 @@
 <script lang="ts">
+    // TODO: Remove the two assignments below...
     let walletAddress = "0x00000000000000000000";
     let currencies = [
         {
