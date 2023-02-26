@@ -14,7 +14,7 @@
 
         setTimeout(() => {
             hasLoaded = true;
-        }, 1000);
+        }, 500);
     });
 </script>
 

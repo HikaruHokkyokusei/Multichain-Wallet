@@ -10,7 +10,9 @@ declare global {
 
     interface Window {
         electronAPI: {
-            getUserDataDirPath: () => Promise<string>
+            getUserDataDirPath: () => Promise<string>,
+            readJsonFile: (string) => Promise<object | null>
+            writeToFile: (string, string) => Promise<boolean>
         };
     }
 }
