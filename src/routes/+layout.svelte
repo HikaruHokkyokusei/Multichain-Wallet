@@ -1,17 +1,22 @@
 <script lang="ts">
     import "../global.css";
     import { onMount } from "svelte";
+    import { genericDataStore } from "$lib/Stores/GenericDataStore";
 
     let hasLoaded = false;
     let isMouseHoveringOnNavBar = false;
 
     onMount(async () => {
+        $genericDataStore = {
+            ...$genericDataStore,
+            "userDataPath": await window.electronAPI.getUserDataDirPath()
+        };
+
         setTimeout(() => {
             hasLoaded = true;
-        }, 1500);
+        }, 1000);
     });
 </script>
-
 
 <div class="Wrapper">
     {#if hasLoaded}

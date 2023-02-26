@@ -1,17 +1,26 @@
 "use strict";
 
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+
+const getUserDataDirPath = async () => {
+  return app.getPath('userData');
+};
 
 const createWindow = () => {
-  const win = new BrowserWindow({
+  const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    webPreferences: {
+      preload: `${__dirname}/preload.js`
+    }
   });
 
-  win.loadFile(`${__dirname}/../build/index.html`).then();
+  mainWindow.loadFile(`${__dirname}/../build/index.html`).then();
 };
 
 app.whenReady().then(() => {
+  ipcMain.handle('fileOperation:getUserDataDirPath', getUserDataDirPath);
+
   createWindow();
 
   app.on('activate', () => {
