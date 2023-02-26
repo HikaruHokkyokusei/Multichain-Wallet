@@ -1,24 +1,59 @@
 <script lang="ts">
     import "../global.css";
+    import { onMount } from "svelte";
 
-    let isHovering: boolean = false;
+    let hasLoaded = false;
+    let isMouseHoveringOnNavBar = false;
+
+    onMount(async () => {
+        setTimeout(() => {
+            hasLoaded = true;
+        }, 1500);
+    });
 </script>
 
+
 <div class="Wrapper">
-    <nav
-            class="SideBar {isHovering ? 'SideBarBig' : 'SideBarSmall'}"
-            on:mouseenter={() => {isHovering = true;}}
-            on:mouseleave={() => {isHovering = false;}}
-    >
-        Nav
-        Bar
-    </nav>
-    <div class="ContentHolder">
-        <slot></slot>
-    </div>
+    {#if hasLoaded}
+        <nav
+                class="SideBar {isMouseHoveringOnNavBar ? 'SideBarBig' : 'SideBarSmall'}"
+                on:mouseenter={() => {isMouseHoveringOnNavBar = true;}}
+                on:mouseleave={() => {isMouseHoveringOnNavBar = false;}}
+        >
+            Nav
+            Bar
+        </nav>
+        <div class="ContentHolder">
+            <slot></slot>
+        </div>
+    {:else}
+        <div class="CenterRowFlex Wrapper">
+            <span class="HomeLoader"></span>
+        </div>
+    {/if}
 </div>
 
 <style>
+    .HomeLoader {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #FFF;
+        border-bottom-color: #FF3D00;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: homeLoaderRotation 1s linear infinite;
+    }
+
+    @keyframes homeLoaderRotation {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
     .SideBar {
         height: 100%;
         z-index: 1;
