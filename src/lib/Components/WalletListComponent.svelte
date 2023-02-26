@@ -23,7 +23,7 @@
                 <div class="WalletNameHolder">{name}</div>
                 <div style="height: 5px; width: 100%;"></div>
                 {#each currencies as { symbol, amount, decimals }}
-                    <div class="CenterRowFlex" style="width: 100%; justify-content: space-between;">
+                    <div class="CenterRowFlex WalletChainDataHolder">
                         <div>{symbol}</div>
                         <div>{(amount / (10 ** decimals)).toFixed(3)}</div>
                     </div>
@@ -57,16 +57,27 @@
 
         box-sizing: border-box;
         padding: 10px;
+    }
 
+    .WalletChainDataHolder {
+        width: 100%;
+        justify-content: space-between;
+
+        box-sizing: border-box;
+        padding: 5px;
+
+        border-radius: 7px;
         cursor: pointer;
     }
 
-    .WalletElement:hover {
-        background-color: #6b76b7;
+    .WalletChainDataHolder:hover {
+        background-color: #5b65a4;
+        border: 1px solid wheat;
     }
 
     .WalletElementSelected {
-        background-color: #50577A;
+        background-color: #5b65a4;
+        border: 1px solid wheat;
     }
 
     .WalletNameHolder {
