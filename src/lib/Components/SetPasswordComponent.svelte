@@ -31,6 +31,8 @@
 </script>
 
 <div class="CenterColumnFlex CredInputHolder">
+    <div style="height: 15px; width: 10px;"></div>
+
     <div class="CenterRowFlex" style="width: 100%;">
         <div class="CenterRowFlex" style="width: 40%; text-align: center;">
             Set app password
@@ -59,10 +61,14 @@
 
     <div class="CenterRowFlex ErrorMessageHolder">{passError}</div>
     <button on:click={setAppPassword}>Confirm</button>
+
+    <div style="height: 15px; width: 10px;"></div>
 </div>
 
 <style>
     .CredInputHolder {
+        min-width: 750px;
+        min-height: 450px;
         width: 50%;
         height: 40%;
 

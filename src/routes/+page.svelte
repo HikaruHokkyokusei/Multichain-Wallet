@@ -6,6 +6,7 @@
     import TokenDataComponent from "$lib/Components/TokenDataComponent.svelte";
     import SetPasswordComponent from "$lib/Components/SetPasswordComponent.svelte";
     import UnlockAppComponent from "$lib/Components/UnlockAppComponent.svelte";
+    import PopupComponent from "$lib/Components/PopupComponent.svelte";
 
     const web3 = new Web3("https://bsc-dataseed1.binance.org/");
 
@@ -17,7 +18,7 @@
     };
 </script>
 
-<div class="Wrapper CenterRowFlex" style="background-color: #404258">
+<div class="Wrapper CenterRowFlex" style="background-color: #404258; position:relative;">
     {#if $genericDataStore["appPasswordHash"] === null}
         <SetPasswordComponent on:unlockWallet={unlockApp}></SetPasswordComponent>
     {:else if $genericDataStore["isAppLocked"]}
@@ -32,6 +33,10 @@
         <div class="PrimarySubComponent">
             <TokenDataComponent></TokenDataComponent>
         </div>
+
+        {#if $genericDataStore["showPopup"]}
+            <PopupComponent></PopupComponent>
+        {/if}
     {/if}
 </div>
 

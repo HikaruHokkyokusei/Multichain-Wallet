@@ -4,7 +4,11 @@ import { writable } from "svelte/store";
 interface GenericData {
     "userDataPath"?: string,
     appPasswordHash?: string,
-    isAppLocked?: boolean
+    isAppLocked?: boolean,
+    showPopup?: boolean
 }
 
-export const genericDataStore: Writable<GenericData> = writable({});
+export const genericDataStore: Writable<GenericData> = writable({
+    isAppLocked: true,
+    showPopup: false
+});

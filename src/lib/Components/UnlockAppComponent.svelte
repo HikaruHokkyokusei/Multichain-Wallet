@@ -15,6 +15,8 @@
 </script>
 
 <div class="CenterColumnFlex CredInputHolder">
+    <div style="height: 15px; width: 10px;"></div>
+
     <div class="CenterRowFlex" style="width: 100%;">
         <div class="CenterRowFlex" style="width: 40%; text-align: center;">
             Password
@@ -31,10 +33,14 @@
 
     <div class="CenterRowFlex ErrorMessageHolder">{passError}</div>
     <button on:click={verifyPassword}>Confirm</button>
+
+    <div style="height: 15px; width: 10px;"></div>
 </div>
 
 <style>
     .CredInputHolder {
+        min-width: 600px;
+        min-height: 300px;
         width: 45%;
         height: 25%;
 
