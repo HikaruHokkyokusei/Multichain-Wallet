@@ -10,3 +10,5 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 /.idea
 /pnpm-lock.yaml
+/wallet-app-win32-x64/
+/package-lock.json

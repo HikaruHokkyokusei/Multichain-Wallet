@@ -1,27 +1,31 @@
 {
 	"name": "blockchain-wallet",
+	"description": "A custom made multi-chain blockchain wallet.",
 	"version": "0.0.1",
 	"private": true,
 	"main": "./electron/main.js",
+	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
+		"vite:dev": "vite dev",
+		"vite:build": "vite build",
+		"vite:preview": "vite preview",
+		"electron:start": "electron .",
+		"package:build": "npx electron-packager . wallet-app --platfrom=win32 --arch=x64 --asar --overwrite",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"electron:start": "electron ."
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"dependencies": {
+		"web3": "^1.8.2"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/adapter-static": "^2.0.1",
-		"@sveltejs/kit": "^1.5.0",
+		"@sveltejs/kit": "^1.8.5",
 		"electron": "^23.1.1",
-		"svelte": "^3.54.0",
-		"svelte-check": "^3.0.1",
-		"tslib": "^2.4.1",
-		"typescript": "^4.9.3",
-		"vite": "^4.0.0"
+		"electron-packager": "^17.1.1",
+		"svelte": "^3.55.1",
+		"svelte-check": "^3.0.4",
+		"tslib": "^2.5.0",
+		"typescript": "^4.9.5",
+		"vite": "^4.1.4"
 	}
 }
