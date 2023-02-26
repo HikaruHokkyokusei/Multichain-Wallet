@@ -12,6 +12,7 @@ declare global {
         electronAPI: {
             getUserDataDirPath: () => Promise<string>,
             readJsonFile: (string) => Promise<object | null>
+            readTextFile: (string) => Promise<string | null>
             writeToFile: (string, string) => Promise<boolean>
         };
     }

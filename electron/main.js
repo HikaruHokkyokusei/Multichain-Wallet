@@ -16,6 +16,15 @@ const readJsonFile = async (event, filePath) => {
     }
 };
 
+const readTextFile = async (event, filePath) => {
+    try {
+        return `${await fs.readFileSync(filePath)}`;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+};
+
 const writeToFile = async (event, filePath, fileData) => {
     try {
         await fs.writeFileSync(filePath, fileData, { flag: "w" });
@@ -41,6 +50,7 @@ const createWindow = () => {
 app.whenReady().then(() => {
     ipcMain.handle('fileOperation:getUserDataDirPath', getUserDataDirPath);
     ipcMain.handle('fileOperation:readJsonFile', readJsonFile);
+    ipcMain.handle('fileOperation:readTextFile', readTextFile);
     ipcMain.handle('fileOperation:writeToFile', writeToFile);
 
     createWindow();
