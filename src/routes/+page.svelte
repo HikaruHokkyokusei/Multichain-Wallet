@@ -9,16 +9,18 @@
 
     const web3 = new Web3("https://bsc-dataseed1.binance.org/");
 
-    let isLocked = true;
     let unlockApp = () => {
-        isLocked = false;
+        $genericDataStore = {
+            ...$genericDataStore,
+            "isAppLocked": false
+        };
     };
 </script>
 
 <div class="Wrapper CenterRowFlex" style="background-color: #404258">
     {#if $genericDataStore["appPasswordHash"] === null}
         <SetPasswordComponent on:unlockWallet={unlockApp}></SetPasswordComponent>
-    {:else if isLocked}
+    {:else if $genericDataStore["isAppLocked"]}
         <UnlockAppComponent on:unlockWallet={unlockApp}></UnlockAppComponent>
     {:else}
         <div class="PrimarySubComponent">
