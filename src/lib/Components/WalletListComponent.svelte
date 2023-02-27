@@ -1,5 +1,14 @@
 <script lang="ts">
-    import { walletListStore } from "../Stores/WalletListStore";
+    import { walletListStore } from "$lib/Stores/WalletListStore";
+    import { genericDataStore } from "$lib/Stores/GenericDataStore.js";
+
+    let setActiveWalletAndNetwork = (walletIndex, networkIndex) => {
+        $genericDataStore = {
+            ...$genericDataStore,
+            "selectedWalletIndex": walletIndex,
+            "selectedNetworkIndex": networkIndex
+        }
+    };
 </script>
 
 <div class="CenterColumnFlex Wrapper" style="background-color: #404258;">
@@ -7,12 +16,16 @@
         Wallets
     </div>
     <div class="CenterColumnFlex WalletBody">
-        {#each $walletListStore as { name, blockchainNetworks }}
+        {#each $walletListStore as { id, name, blockchainNetworks }, idx1}
             <div class="WalletElement">
                 <div class="WalletNameHolder">{name}</div>
-                <div style="height: 5px; width: 100%;"></div>
-                {#each blockchainNetworks as blockchainNetwork}
-                    <div class="CenterRowFlex WalletChainDataHolder">
+                <div style="height: 3px; width: 100%;"></div>
+                {#each blockchainNetworks as blockchainNetwork, idx2}
+                    <div style="height: 2px; width: 100%;"></div>
+                    <div on:click="{() => setActiveWalletAndNetwork(idx1, idx2)}"
+                         class="CenterRowFlex WalletChainDataHolder"
+                         class:WalletElementSelected={$genericDataStore["selectedWalletIndex"] === idx1 && $genericDataStore["selectedNetworkIndex"] === idx2}
+                    >
                         <div>{blockchainNetwork["symbol"]}</div>
                         <div>{(blockchainNetwork["amount"] / (10 ** blockchainNetwork["decimals"])).toFixed(3)}</div>
                     </div>
@@ -39,7 +52,7 @@
     }
 
     .WalletElement {
-        height: 125px;
+        min-height: 125px;
         width: 95%;
         background-color: #6B728E;
         border-radius: 7px;

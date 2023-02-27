@@ -5,7 +5,9 @@ interface GenericData {
     "userDataPath"?: string,
     appPasswordHash?: string,
     isAppLocked?: boolean,
-    showPopup?: boolean
+    showPopup?: boolean,
+    selectedWalletIndex?: string,
+    selectedNetworkIndex?: string
 }
 
 export const genericDataStore: Writable<GenericData> = writable({

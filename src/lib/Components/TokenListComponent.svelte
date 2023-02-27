@@ -20,7 +20,7 @@
             </div>
             <div style="font-size: 30px; font-weight: bold;">{currencies[0]["symbol"]}</div>
         </div>
-        <div style="width: 100%; flex: 1 0 0; font-size: 20px; text-align: center; color: rgba(150,175,200,0.66)">{walletAddress}</div>
+        <div style="width: 100%; flex: 1 0 0; font-size: 20px; text-align: center; color: rgba(10,50,100,0.85)">{walletAddress}</div>
     </div>
 
     <div style="width: 100%; height: 25px; border-bottom: 1px solid rgba(44,26,80,0.9);"></div>
