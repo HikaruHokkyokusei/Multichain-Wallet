@@ -6,6 +6,7 @@
     import { supportedNetworkList } from "$lib/Configs/SupportedNetworks";
     import { genericDataStore } from "$lib/Stores/GenericDataStore";
     import Loader from "./Loader.svelte";
+    import { v4 } from "uuid";
 
     let showPhase = 0;
     let dispatch = createEventDispatcher();
@@ -30,6 +31,7 @@
             $walletListStore = [
                 ...$walletListStore,
                 {
+                    "id": `${v4()}${v4()}`,
                     "name": walletName,
                     "phrase": newWallet["phrase"], // TODO: Encrypt this...
                     "index": newWallet["index"], // TODO: Encrypt this...
