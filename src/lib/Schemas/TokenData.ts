@@ -1,5 +1,7 @@
 export interface TokenData {
-    "symbol": string
+    "name": string,
+    "symbol": string,
     "amount": number,
-    "decimals": number
+    "decimals": number,
+    "contractAddress"?: string
 }

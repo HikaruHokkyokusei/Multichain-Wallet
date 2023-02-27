@@ -1,29 +1,84 @@
 <script lang="ts">
+    import { createEventDispatcher } from "svelte";
     import { Web3Service } from "$lib/Services/Web3Service";
+    import { walletListStore } from "$lib/Stores/WalletListStore";
+    import type { SupportedNetworkData } from "$lib/Configs/SupportedNetworks";
+    import { supportedNetworkList } from "$lib/Configs/SupportedNetworks";
+    import { genericDataStore } from "$lib/Stores/GenericDataStore";
+    import Loader from "./Loader.svelte";
 
-    let walletTypeList = [
-        { "name": "Bitcoin", "type": "btc" },
-        { "name": "Ethereum", "type": "eth" },
-        { "name": "Binance Smart Chain", "type": "bsc" },
-        { "name": "Polygon", "type": "polygon" },
-        { "name": "XRP Ripple", "type": "xrp" }
-    ];
+    let showPhase = 0;
+    let dispatch = createEventDispatcher();
 
-    let createNewWallet = async (walletType: string) => {
-        if (walletType === "eth" || walletType === "bsc" || walletType === "polygon") {
-            console.log(await Web3Service.createWallet(walletType));
+    let walletName = "";
+    let goToNextPhase = () => {
+        switch (showPhase) {
+            case 0: {
+                if (!walletName) {
+                    return;
+                }
+                break;
+            }
         }
+        showPhase += 1;
+    };
+
+    let createNewWallet = async (network: SupportedNetworkData) => {
+        goToNextPhase();
+        if (network["type"] === "eth" || network["type"] === "bsc" || network["type"] === "polygon") {
+            let newWallet = await Web3Service.createWallet(network["type"]);
+            $walletListStore = [
+                ...$walletListStore,
+                {
+                    "name": walletName,
+                    "phrase": newWallet["phrase"], // TODO: Encrypt this...
+                    "index": newWallet["index"], // TODO: Encrypt this...
+                    "blockchainNetworks": [
+                        {
+                            "name": network["name"],
+                            "symbol": network["symbol"],
+                            "type": network["type"],
+                            "amount": 0,
+                            "decimals": network["decimals"],
+                            "publicKey": newWallet["publicKey"],
+                            "privateKey": newWallet["privateKey"], // TODO: Encrypt this...
+                            "tokens": []
+                        }
+                    ]
+                }
+            ];
+
+            await window.electronAPI.writeToFile(
+                `${$genericDataStore["userDataPath"]}/walletList.json`,
+                JSON.stringify($walletListStore)
+            );
+        }
+        dispatch("closePopup");
     };
 </script>
 
 <div class="CenterColumnFlex AddWalletWrapper">
-    {#each walletTypeList as walletType}
-        <div class="CenterRowFlex WalletTypeDataHolderWrapper">
-            <div class="CenterRowFlex WalletTypeDataHolder" on:click={() => createNewWallet(walletType["type"])}>
-                {walletType["name"]}
+    {#if showPhase === 0}
+        <div class="CenterColumnFlex" style="width: 100%; height: 40%; justify-content: space-around;">
+            <div class="CenterRowFlex" style="width: 100%; text-align: center; font-size: 30px;">
+                Wallet Name:
             </div>
+            <input bind:value={walletName} type="text"/>
         </div>
-    {/each}
+        <button on:click={goToNextPhase}>Confirm</button>
+    {:else if showPhase === 1}
+        {#each supportedNetworkList as network}
+            <div class="CenterRowFlex WalletTypeDataHolderWrapper">
+                <button class="CenterRowFlex WalletTypeDataHolder"
+                        on:click={() => createNewWallet(network)}
+                >
+                    {network["name"]}
+                </button>
+            </div>
+        {/each}
+    {:else if showPhase === 2}
+        <Loader></Loader>
+    {/if}
 </div>
 
 <style>
@@ -46,8 +101,6 @@
         width: 95%;
         height: 60px;
 
-        padding: 5px;
-
         text-align: center;
         font-size: 25px;
 
@@ -55,14 +108,42 @@
         background-color: blanchedalmond;
         color: mediumslateblue;
 
-        transition: 0.2s padding;
+        transition: 0.2s width, height;
     }
 
     .WalletTypeDataHolder:hover {
-        padding: 10px;
+        width: calc(95% + 10);
+        height: 65px;
     }
 
     .WalletTypeDataHolder:active {
-        padding: 0;
+        width: calc(95% - 10px);
+        height: 60px;
+    }
+
+    input, button {
+        outline: none;
+        border: none;
+
+        border-radius: 10px;
+    }
+
+    input {
+        width: 275px;
+        height: 35px;
+        font-size: 20px;
+
+        box-sizing: border-box;
+        padding: 5px 13px;
+    }
+
+    button {
+        height: 50px;
+        width: 150px;
+        font-size: 30px;
+    }
+
+    input:active {
+        outline: none;
     }
 </style>

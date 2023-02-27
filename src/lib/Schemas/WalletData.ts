@@ -1,6 +1,8 @@
-import type { TokenData } from "./TokenData";
+import type { NetworkData } from "./NetworkData";
 
 export interface WalletData {
     "name": string,
-    "tokens": TokenData[]
+    "mnemonic"?: string,
+    "index"?: number,
+    "blockchainNetworks": NetworkData[]
 }

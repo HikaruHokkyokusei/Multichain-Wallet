@@ -1,19 +1,5 @@
 <script lang="ts">
     import { walletListStore } from "../Stores/WalletListStore";
-
-    // TODO: Remove this assignment...
-    $walletListStore = [
-        {
-            "name": "Wallet 1",
-            "tokens": [
-                {
-                    "symbol": "ETH",
-                    "amount": 1534530000000000000,
-                    "decimals": 18
-                }
-            ]
-        }
-    ]
 </script>
 
 <div class="CenterColumnFlex Wrapper" style="background-color: #404258;">
@@ -21,14 +7,14 @@
         Wallets
     </div>
     <div class="CenterColumnFlex WalletBody">
-        {#each $walletListStore as { name, tokens }}
+        {#each $walletListStore as { name, blockchainNetworks }}
             <div class="WalletElement">
                 <div class="WalletNameHolder">{name}</div>
                 <div style="height: 5px; width: 100%;"></div>
-                {#each tokens as { symbol, amount, decimals }}
+                {#each blockchainNetworks as blockchainNetwork}
                     <div class="CenterRowFlex WalletChainDataHolder">
-                        <div>{symbol}</div>
-                        <div>{(amount / (10 ** decimals)).toFixed(3)}</div>
+                        <div>{blockchainNetwork["symbol"]}</div>
+                        <div>{(blockchainNetwork["amount"] / (10 ** blockchainNetwork["decimals"])).toFixed(3)}</div>
                     </div>
                 {/each}
             </div>

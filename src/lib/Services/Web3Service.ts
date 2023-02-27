@@ -14,7 +14,7 @@ export class Web3Service {
             return {
                 "publicKey": wallet.publicKey,
                 "privateKey": wallet.privateKey,
-                "mnemonic": wallet.mnemonic?.phrase,
+                "phrase": wallet.mnemonic?.phrase,
                 "index": wallet.index
             };
         }
