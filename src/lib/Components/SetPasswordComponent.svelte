@@ -4,7 +4,7 @@
 
     let passError = "";
     let appPassword, confirmPass;
-    let eventDispatcher = createEventDispatcher();
+    let dispatch = createEventDispatcher();
 
     let setAppPassword = async () => {
         if (appPassword.length < 6) {
@@ -22,7 +22,7 @@
                     ...$genericDataStore,
                     "appPasswordHash": appPassHash
                 };
-                eventDispatcher('unlockWallet');
+                dispatch('unlockWallet');
             }
         } else {
             passError = "Passwords do not match.";

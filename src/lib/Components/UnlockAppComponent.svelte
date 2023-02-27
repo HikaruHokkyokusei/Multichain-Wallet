@@ -3,11 +3,11 @@
     import { createEventDispatcher } from "svelte";
 
     let appPassword, passError = "";
-    let eventDispatcher = createEventDispatcher();
+    let dispatch = createEventDispatcher();
 
     let verifyPassword = async () => {
         if (await window.electronAPI.verifyAppPassword(appPassword, $genericDataStore["appPasswordHash"])) {
-            eventDispatcher('unlockWallet');
+            dispatch('unlockWallet');
         } else {
             passError = "Incorrect Password";
         }
