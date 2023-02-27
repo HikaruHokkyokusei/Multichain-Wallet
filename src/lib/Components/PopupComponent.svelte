@@ -10,9 +10,9 @@
 </script>
 
 <div class="CenterRowFlex Wrapper PopupWrapper">
-    <div class="PopupContentHolder">
+    <div class="CenterColumnFlex PopupContentHolder">
+        <slot></slot>
         <div class="CenterRowFlex PopupCloseButtonHolder">
-            <slot></slot>
             <button class="CenterRowFlex PopupCloseButton" on:click={closePopup}>X</button>
         </div>
     </div>

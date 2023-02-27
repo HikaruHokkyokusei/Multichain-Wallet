@@ -1,5 +1,4 @@
 <script lang="ts">
-    import Web3 from "web3";
     import { genericDataStore } from "$lib/Stores/GenericDataStore";
     import WalletListComponent from "$lib/Components/WalletListComponent.svelte";
     import TokenListComponent from "$lib/Components/TokenListComponent.svelte";
@@ -7,8 +6,7 @@
     import SetPasswordComponent from "$lib/Components/SetPasswordComponent.svelte";
     import UnlockAppComponent from "$lib/Components/UnlockAppComponent.svelte";
     import PopupComponent from "$lib/Components/PopupComponent.svelte";
-
-    const web3 = new Web3("https://bsc-dataseed1.binance.org/");
+    import AddWalletComponent from "$lib/Components/AddWalletComponent.svelte";
 
     let unlockApp = () => {
         $genericDataStore = {
@@ -35,7 +33,9 @@
         </div>
 
         {#if $genericDataStore["showPopup"]}
-            <PopupComponent></PopupComponent>
+            <PopupComponent>
+                <AddWalletComponent></AddWalletComponent>
+            </PopupComponent>
         {/if}
     {/if}
 </div>
