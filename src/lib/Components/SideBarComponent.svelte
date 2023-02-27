@@ -1,7 +1,15 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
+    import { genericDataStore } from "$lib/Stores/GenericDataStore";
 
     let isMouseHoveringOnNavBar = false;
+
+    let showPopup = () => {
+        $genericDataStore = {
+            ...$genericDataStore,
+            "showPopup": true
+        };
+    };
 </script>
 
 <nav
@@ -20,7 +28,7 @@
     <div style="height: 15px; width: 100%;"></div>
 
     <div class="CenterColumnFlex SideBarOptionHolder">
-        <div class="CenterRowFlex" style="width: 100%; cursor: pointer; height: 50px;">
+        <div on:click={showPopup} class="CenterRowFlex" style="width: 100%; cursor: pointer; height: 50px;">
             <i class="fa-solid fa-plus" style="color: black; opacity: 0.4; font-size: 40px;"></i>
             {#if isMouseHoveringOnNavBar}
                 <div style="width: 10px;"></div>
