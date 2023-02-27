@@ -4,6 +4,7 @@
     import { genericDataStore } from "$lib/Stores/GenericDataStore";
     import { walletListStore } from "$lib/Stores/WalletListStore";
     import SideBarComponent from "../lib/Components/SideBarComponent.svelte";
+    import Loader from "../lib/Components/Loader.svelte";
 
     let hasLoaded = false;
     onMount(async () => {
@@ -31,33 +32,11 @@
             <slot></slot>
         </div>
     {:else}
-        <div class="CenterRowFlex Wrapper">
-            <span class="HomeLoader"></span>
-        </div>
+        <Loader></Loader>
     {/if}
 </div>
 
 <style>
-    .HomeLoader {
-        width: 48px;
-        height: 48px;
-        border: 5px solid #FFF;
-        border-bottom-color: #FF3D00;
-        border-radius: 50%;
-        display: inline-block;
-        box-sizing: border-box;
-        animation: homeLoaderRotation 1s linear infinite;
-    }
-
-    @keyframes homeLoaderRotation {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
     .ContentHolder {
         height: 100%;
         z-index: 0;

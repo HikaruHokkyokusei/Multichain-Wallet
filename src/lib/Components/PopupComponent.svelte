@@ -1,19 +1,14 @@
 <script lang="ts">
-    import { genericDataStore } from "$lib/Stores/GenericDataStore";
+    import { createEventDispatcher } from "svelte";
 
-    let closePopup = () => {
-        $genericDataStore = {
-            ...$genericDataStore,
-            "showPopup": false
-        }
-    };
+    let dispatch = createEventDispatcher();
 </script>
 
 <div class="CenterRowFlex Wrapper PopupWrapper">
     <div class="CenterColumnFlex PopupContentHolder">
         <slot></slot>
         <div class="CenterRowFlex PopupCloseButtonHolder">
-            <button class="CenterRowFlex PopupCloseButton" on:click={closePopup}>X</button>
+            <button class="CenterRowFlex PopupCloseButton" on:click={() => dispatch("closePopup")}>X</button>
         </div>
     </div>
 </div>

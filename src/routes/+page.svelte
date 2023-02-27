@@ -8,19 +8,25 @@
     import PopupComponent from "$lib/Components/PopupComponent.svelte";
     import AddWalletComponent from "$lib/Components/AddWalletComponent.svelte";
 
-    let unlockApp = () => {
+    let unlockWallet = () => {
         $genericDataStore = {
             ...$genericDataStore,
             "isAppLocked": false
         };
     };
+    let closePopup = () => {
+        $genericDataStore = {
+            ...$genericDataStore,
+            "showPopup": false
+        }
+    };
 </script>
 
 <div class="Wrapper CenterRowFlex" style="background-color: #404258; position:relative;">
     {#if $genericDataStore["appPasswordHash"] === null}
-        <SetPasswordComponent on:unlockWallet={unlockApp}></SetPasswordComponent>
+        <SetPasswordComponent on:unlockWallet={unlockWallet}></SetPasswordComponent>
     {:else if $genericDataStore["isAppLocked"]}
-        <UnlockAppComponent on:unlockWallet={unlockApp}></UnlockAppComponent>
+        <UnlockAppComponent on:unlockWallet={unlockWallet}></UnlockAppComponent>
     {:else}
         <div class="PrimarySubComponent">
             <WalletListComponent></WalletListComponent>
@@ -33,8 +39,8 @@
         </div>
 
         {#if $genericDataStore["showPopup"]}
-            <PopupComponent>
-                <AddWalletComponent></AddWalletComponent>
+            <PopupComponent on:closePopup={closePopup}>
+                <AddWalletComponent on:closePopup={closePopup}></AddWalletComponent>
             </PopupComponent>
         {/if}
     {/if}
