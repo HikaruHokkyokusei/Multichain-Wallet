@@ -2,6 +2,7 @@
 
 const { app, BrowserWindow, ipcMain, clipboard } = require('electron');
 const fs = require('fs');
+const getDirName = require('path').dirname;
 const crypto = require('crypto');
 
 const appPasswordConfigs = {
@@ -66,7 +67,9 @@ const readTextFile = async (event, filePath) => {
 };
 const writeToFile = async (event, filePath, fileData) => {
     try {
-        await fs.writeFileSync(filePath, fileData, { flag: "w" });
+        let path = getDirName(filePath);
+        fs.mkdirSync(path, { recursive: true });
+        fs.writeFileSync(filePath, fileData, { flag: "w" });
         return true;
     } catch (err) {
         console.log(err);

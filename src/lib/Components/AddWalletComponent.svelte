@@ -1,12 +1,14 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     import Loader from "./Loader.svelte";
-    import { Web3Service } from "../Services/Web3Service";
-    import { newWalletData } from "../Services/WalletService";
-    import { walletListStore } from "../Stores/WalletListStore";
     import { genericDataStore } from "../Stores/GenericDataStore";
+    import { walletListStore } from "../Stores/WalletListStore";
+    import { networkListStore } from "../Stores/NetworkListStore";
+    import { Web3Service } from "../Services/Web3Service";
+    import { WalletService } from "../Services/WalletService";
     import type { SupportedNetworkData } from "../Configs/SupportedNetworks";
     import { supportedNetworkList } from "../Configs/SupportedNetworks";
+    import type { NetworkData } from "../Schemas/NetworkData";
 
     let showPhase = 0;
     let dispatch = createEventDispatcher();
@@ -30,18 +32,30 @@
         if (network.type === "eth" || network.type === "bsc" || network.type === "polygon") {
             let newWallet = await Web3Service.createWallet(network.type);
 
-            let walletListData = newWalletData(walletName, newWallet, network);
-            if (walletListData != null) {
+            let walletNetworkData = WalletService.newWalletData(walletName, newWallet, network);
+            if (walletNetworkData.walletData != null && walletNetworkData.networkDataList != null) {
                 $walletListStore = [
                     ...$walletListStore,
-                    walletListData
+                    walletNetworkData.walletData
                 ];
-            }
 
-            await window.electronAPI.writeToFile(
-                `${$genericDataStore["userDataPath"]}/walletList.json`,
-                JSON.stringify($walletListStore)
-            );
+                let networkList: { [walletId: string]: NetworkData[] } = {
+                    ...$networkListStore
+                };
+                networkList[walletNetworkData.walletData.id] = walletNetworkData.networkDataList;
+                $networkListStore = networkList;
+
+                await window.electronAPI.writeToFile(
+                    `${$genericDataStore["userDataPath"]}\\walletDataList.json`,
+                    JSON.stringify($walletListStore)
+                );
+
+                await window.electronAPI.writeToFile(
+                    `${$genericDataStore["userDataPath"]}\\wallets\\` +
+                    `${walletNetworkData.walletData.id}\\networkDataList.json`,
+                    JSON.stringify($networkListStore[walletNetworkData.walletData.id])
+                );
+            }
         }
 
         dispatch("closePopup");

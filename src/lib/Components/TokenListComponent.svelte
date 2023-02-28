@@ -1,32 +1,36 @@
 <script lang="ts">
-    import type { WalletData } from "../Schemas/WalletData";
     import type { NetworkData } from "../Schemas/NetworkData";
     import type { TokenData } from "../Schemas/TokenData";
     import { genericDataStore } from "../Stores/GenericDataStore";
     import { walletListStore } from "../Stores/WalletListStore";
+    import { networkListStore } from "../Stores/NetworkListStore";
     import { tokenListStore } from "../Stores/TokenListStore";
 
-    let wallet: WalletData;
     let walletAddress: string;
-    let network: NetworkData;
-    let tokens: TokenData[] | undefined;
+    let networkData: NetworkData | null;
+    let tokens: TokenData[];
 
     $: {
-        if ($genericDataStore["selectedWalletIndex"] != null) {
-            wallet = $walletListStore[$genericDataStore["selectedWalletIndex"]];
+        if ($genericDataStore["selectedNetworkIndex"] != null) {
+            if ($networkListStore[$walletListStore[$genericDataStore["selectedWalletIndex"]].id]) {
+                networkData = $networkListStore[$walletListStore[$genericDataStore["selectedWalletIndex"]].id][$genericDataStore["selectedNetworkIndex"]];
+            } else {
+                networkData = null;
+            }
+        } else {
+            networkData = null;
         }
     }
-
     $: {
-        if ($genericDataStore["selectedNetworkIndex"] != null && wallet) {
-            network = wallet["blockchainNetworks"][$genericDataStore["selectedNetworkIndex"]];
-            walletAddress = network["walletAddress"];
+        if (networkData) {
+            walletAddress = networkData.walletAddress;
         }
     }
-
     $: {
-        if ($tokenListStore) {
+        if (networkData && $tokenListStore) {
             tokens = $tokenListStore
+        } else {
+            tokens = [];
         }
     }
 
@@ -36,14 +40,16 @@
 
             walletAddress = "Copied";
             setTimeout(() => {
-                walletAddress = network["walletAddress"];
+                if (networkData) {
+                    walletAddress = networkData["walletAddress"];
+                }
             }, 1000);
         }
     };
 </script>
 
 <div class="CenterColumnFlex Wrapper" style="background-color: #4c4c65; justify-content: flex-start">
-    {#if $genericDataStore["selectedWalletIndex"] != null}
+    {#if networkData != null}
         <div style="height: 25px;"></div>
 
         <div class="TokenListMainCoin" style="min-height: 150px; height: 150px; background-color: #6B728E;">
@@ -58,9 +64,9 @@
 
             <div class="CenterColumnFlex" style="width: 100%; flex: 4 0 0;">
                 <div style="font-size: 45px; font-weight: bold;">
-                    {(network["amount"] / (10 ** network["decimals"])).toFixed(3)}
+                    {(networkData["amount"] / (10 ** networkData["decimals"])).toFixed(3)}
                 </div>
-                <div style="font-size: 30px; font-weight: bold; cursor: pointer;">{network["symbol"]}</div>
+                <div style="font-size: 30px; font-weight: bold; cursor: pointer;">{networkData["symbol"]}</div>
             </div>
 
             <div class="CenterRowFlex WalletAddressHolder">
@@ -78,10 +84,13 @@
         <div class="TokenListMainCoin" style="flex: 1 0 0;">
             <div style="width: 100%; height: 25px; border-bottom: 1px solid rgba(44,26,80,0.9);"></div>
 
-            {#each tokens as token}
-                <div style="height: 5px;"></div>
-                <div></div>
-            {/each}
+            {#if tokens}
+                {#each tokens as token}
+                    <div style="height: 5px;"></div>
+                    <div>{token.symbol}</div>
+                    <div>{(token.amount / (10 ** token.decimals)).toFixed(3)}</div>
+                {/each}
+            {/if}
         </div>
     {/if}
 </div>

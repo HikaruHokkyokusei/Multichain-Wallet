@@ -1,26 +1,10 @@
 <script lang="ts">
+    import { createEventDispatcher } from "svelte";
     import { genericDataStore } from "../Stores/GenericDataStore.js";
     import { walletListStore } from "../Stores/WalletListStore";
-    import { tokenListStore } from "../Stores/TokenListStore";
-    import type { TokenData } from "../Schemas/TokenData";
+    import { networkListStore } from "../Stores/NetworkListStore.js";
 
-    let setActiveWalletAndNetwork = (walletIndex: number, networkIndex: number) => {
-        $tokenListStore = [];
-
-        $genericDataStore = {
-            ...$genericDataStore,
-            "selectedWalletIndex": walletIndex,
-            "selectedNetworkIndex": networkIndex
-        }
-
-        window.electronAPI.readJsonFile(
-            `${$genericDataStore["userDataPath"]}/wallets/` +
-            $walletListStore[walletIndex]["id"] +
-            `/tokenList.json`
-        ).then((data) => {
-            $tokenListStore = (data || []) as TokenData[];
-        });
-    };
+    let dispatch = createEventDispatcher();
 </script>
 
 <div class="CenterColumnFlex Wrapper" style="background-color: #404258;">
@@ -28,31 +12,38 @@
         Wallets
     </div>
     <div class="CenterColumnFlex WalletBody">
-        {#each $walletListStore as { id, name, blockchainNetworks }, idx1}
-            <div style="width: 100%; height: 10px;"></div>
-            <div class="WalletElement">
-                <div class="CenterRowFlex WalletNameHolder" style="justify-content: space-between">
-                    <div>
-                        {name}
+        {#if $walletListStore}
+            {#each $walletListStore as { id, name }, idx1}
+                <div style="width: 100%; height: 10px;"></div>
+                <div class="WalletElement">
+                    <div class="CenterRowFlex WalletNameHolder" style="justify-content: space-between">
+                        <div>
+                            {name}
+                        </div>
+                        <div class="CenterRowFlex" style="width: 20px; cursor: pointer">
+                            <i class="fa-solid fa-ellipsis-vertical"
+                               style="font-size: 17px; color: rgba(10, 50, 100, 0.85);"></i>
+                        </div>
                     </div>
-                    <div class="CenterRowFlex" style="width: 20px; cursor: pointer">
-                        <i class="fa-solid fa-ellipsis-vertical"
-                           style="font-size: 17px; color: rgba(10, 50, 100, 0.85);"></i>
-                    </div>
+                    <div style="height: 3px; width: 100%;"></div>
+                    {#if $networkListStore[$walletListStore[idx1].id] != null}
+                        {#each $networkListStore[$walletListStore[idx1].id] as networkData, idx2}
+                            <div style="height: 2px; width: 100%;"></div>
+                            <div on:click="{() => dispatch('setActiveWalletAndNetwork', {
+                                'walletIndex': idx1,
+                                'networkIndex': idx2
+                            })}"
+                                 class="CenterRowFlex WalletChainDataHolder"
+                                 class:WalletElementSelected={$genericDataStore["selectedWalletIndex"] === idx1 && $genericDataStore["selectedNetworkIndex"] === idx2}
+                            >
+                                <div>{networkData["symbol"]}</div>
+                                <div>{(networkData["amount"] / (10 ** networkData["decimals"])).toFixed(3)}</div>
+                            </div>
+                        {/each}
+                    {/if}
                 </div>
-                <div style="height: 3px; width: 100%;"></div>
-                {#each blockchainNetworks as blockchainNetwork, idx2}
-                    <div style="height: 2px; width: 100%;"></div>
-                    <div on:click="{() => setActiveWalletAndNetwork(idx1, idx2)}"
-                         class="CenterRowFlex WalletChainDataHolder"
-                         class:WalletElementSelected={$genericDataStore["selectedWalletIndex"] === idx1 && $genericDataStore["selectedNetworkIndex"] === idx2}
-                    >
-                        <div>{blockchainNetwork["symbol"]}</div>
-                        <div>{(blockchainNetwork["amount"] / (10 ** blockchainNetwork["decimals"])).toFixed(3)}</div>
-                    </div>
-                {/each}
-            </div>
-        {/each}
+            {/each}
+        {/if}
     </div>
 </div>
 
