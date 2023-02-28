@@ -7,12 +7,17 @@ export interface WalletCredentials {
     phrase: string | null | undefined,
     index: number | null
 }
-
 export interface FetchToken {
     walletType: string,
     holderAddress: string,
     isContract: boolean,
     contractAddress?: string
+}
+
+export interface FetchedToken {
+    "amount": number,
+    "networkType": string,
+    "contractAddress"?: string
 }
 
 export class Web3Service {
@@ -432,25 +437,27 @@ export class Web3Service {
         }
     };
 
-    public static getTokenAmounts = async (tokens: FetchToken[]): Promise<number[]> => {
-        let result: number[] = [];
+    public static getTokenAmounts = async (tokens: FetchToken[]): Promise<FetchedToken[]> => {
+        let result: FetchedToken[] = [];
 
         for (let token of tokens) {
             if (token.walletType === "eth" || token.walletType === "bsc" || token.walletType === "polygon") {
-                let balance = 0;
+                let appendObject = {
+                    "networkType": token.walletType,
+                    "contractAddress": token.contractAddress,
+                    "amount": 0
+                };
 
-                if (token.isContract) {
-                    if (token.contractAddress != null) {
-                        balance = parseInt(await (new this._evmWeb3Instances[token.walletType].eth.Contract(
-                            this._evmErc20ContractABI,
-                            token.contractAddress
-                        )).methods["balanceOf"].call(token.holderAddress));
-                    }
+                if (token.contractAddress != null) {
+                    appendObject["amount"] = parseInt(await (new this._evmWeb3Instances[token.walletType].eth.Contract(
+                        this._evmErc20ContractABI,
+                        token.contractAddress
+                    )).methods["balanceOf"].call(token.holderAddress));
                 } else {
-                    balance = parseInt(await this._evmWeb3Instances[token.walletType].eth.getBalance(token.holderAddress));
+                    appendObject["amount"] = parseInt(await this._evmWeb3Instances[token.walletType].eth.getBalance(token.holderAddress));
                 }
 
-                result.push(balance);
+                result.push(appendObject);
             }
         }
 

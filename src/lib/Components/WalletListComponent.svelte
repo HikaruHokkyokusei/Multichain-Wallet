@@ -28,9 +28,9 @@
                     <div style="height: 3px; width: 100%;"></div>
 
                     {#if $networkCollectionStore[$walletListStore[idx1].id] != null}
-                        {@const networkCollection = $networkCollectionStore[$walletListStore[idx1].id]}
-                        {#each Object.keys(networkCollection) as networkType}
-                            {@const networkData = networkCollection[networkType]}
+                        {@const allNetworks = $networkCollectionStore[$walletListStore[idx1].id]}
+                        {#each Object.keys(allNetworks) as networkType}
+                            {@const networkData = allNetworks[networkType]}
 
                             <div style="height: 2px; width: 100%;"></div>
                             <div on:click="{() => dispatch('setActiveWalletAndNetwork', {

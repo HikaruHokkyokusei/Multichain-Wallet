@@ -29,23 +29,24 @@
     };
 
     let setActiveWalletAndNetwork = async (event) => {
-        let walletIndex: number = event.detail.walletIndex, networkIndex: string = event.detail.networkType;
+        let walletIndex: number = event.detail.walletIndex;
+        let networkType: string = event.detail.networkType;
+
         $networkCollectionStore = {};
-        $tokenListStore = [];
+        $tokenListStore = {};
 
         $genericDataStore = {
             ...$genericDataStore,
             "selectedWalletIndex": walletIndex,
-            "selectedNetworkType": networkIndex
+            "selectedNetworkType": networkType
         }
 
         $networkCollectionStore = await getListOfNetworks();
 
         $tokenListStore = (await window.electronAPI.readJsonFile(
             `${$genericDataStore["userDataPath"]}\\wallets\\` +
-            `${$walletListStore[walletIndex]["id"]}\\` +
-            `${$networkCollectionStore[networkIndex]}\\tokenDataList.json`
-        ) || []) as TokenData[];
+            `${$walletListStore[walletIndex]["id"]}\\${networkType}\\tokenDataList.json`
+        ) || {}) as { [networkType: string]: TokenData };
     };
 
     // Copy of function in +layout.svelte

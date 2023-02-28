@@ -1,6 +1,7 @@
 <script lang="ts">
     import { genericDataStore } from "../Stores/GenericDataStore";
     import { walletListStore } from "../Stores/WalletListStore";
+    import type { NetworkCollection } from "../Stores/NetworkCollectionStore";
     import { networkCollectionStore } from "../Stores/NetworkCollectionStore";
     import { tokenListStore } from "../Stores/TokenListStore";
     import type { FetchToken } from "../Services/Web3Service";
@@ -10,7 +11,7 @@
 
     let walletAddress: string;
     let networkData: NetworkData | null;
-    let tokens: TokenData[];
+    let tokens: { [contractAddress: string]: TokenData };
 
     $: {
         if ($genericDataStore["selectedNetworkType"] != null) {
@@ -32,33 +33,57 @@
         if (networkData && $tokenListStore) {
             tokens = $tokenListStore
         } else {
-            tokens = [];
+            tokens = {};
         }
     }
 
     let updateAmounts = async () => {
+        // TODO: Check for race conditions...
         if (networkData) {
+            let selectedWalletId = $walletListStore[$genericDataStore["selectedWalletIndex"]].id;
+            let selectedNetworkType = networkData.type;
+
             let fetchList: FetchToken[] = [
                 { walletType: networkData.type, holderAddress: networkData.walletAddress, isContract: false }
             ];
 
             if (tokens) {
-                for (let token of tokens) {
+                for (let key of Object.keys(tokens)) {
                     fetchList.push({
                         walletType: networkData.type,
                         holderAddress: networkData.walletAddress,
                         isContract: true,
-                        contractAddress: token.contractAddress
+                        contractAddress: key
                     });
                 }
             }
 
-            let amounts = await Web3Service.getTokenAmounts(fetchList);
-            let networkDataList: { [walletId: string]: NetworkData[] } = {
+            let fetchedTokens = await Web3Service.getTokenAmounts(fetchList);
+            let networkCollection: NetworkCollection = {
                 ...$networkCollectionStore
             }
-            let allNetworkData: NetworkData[] = networkDataList[$walletListStore[$genericDataStore["selectedWalletIndex"]].id];
 
+            let currNetworkData: NetworkData = networkCollection[selectedWalletId][selectedNetworkType];
+            currNetworkData["amount"] = fetchedTokens[0]["amount"];
+            $networkCollectionStore = networkCollection;
+            window.electronAPI.writeToFile(
+                `${$genericDataStore["userDataPath"]}\\wallets\\` +
+                `${selectedWalletId}\\networkDataList.json`,
+                JSON.stringify($networkCollectionStore[selectedWalletId])
+            ).then();
+
+            // TODO: Make checks before implementing this logic...
+            fetchedTokens.shift()
+            let allTokens = { ...$tokenListStore }
+            for (let token of fetchedTokens) {
+                allTokens[token.contractAddress]["amount"] = token.amount;
+            }
+            $tokenListStore = allTokens;
+            window.electronAPI.writeToFile(
+                `${$genericDataStore["userDataPath"]}\\wallets\\` +
+                `${selectedWalletId}\\${selectedNetworkType}\\tokenDataList.json`,
+                JSON.stringify($tokenListStore)
+            ).then();
         }
     };
 
@@ -84,7 +109,8 @@
             <div style="height: 5px; width: 100%;"></div>
 
             <div class="CenterRowFlex WalletAddressHolder" style="justify-content: flex-end; text-align: right;">
-                <i class="fa-solid fa-arrows-rotate" style="font-size: 18px; cursor: pointer;"></i>
+                <i on:click={updateAmounts} class="fa-solid fa-arrows-rotate"
+                   style="font-size: 18px; cursor: pointer;"></i>
                 <div style="width: 15px;"></div>
                 <i class="fa-solid fa-ellipsis-vertical" style="font-size: 18px; cursor: pointer;"></i>
                 <div style="width: 15px;"></div>
@@ -113,7 +139,8 @@
             <div style="width: 100%; height: 25px; border-bottom: 1px solid rgba(44,26,80,0.9);"></div>
 
             {#if tokens}
-                {#each tokens as token}
+                {#each Object.keys(tokens) as tokenAddress}
+                    {@const token = tokens[tokenAddress]}
                     <div style="height: 5px;"></div>
                     <div>{token.symbol}</div>
                     <div>{(token.amount / (10 ** token.decimals)).toFixed(3)}</div>
