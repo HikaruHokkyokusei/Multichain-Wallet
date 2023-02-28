@@ -1,19 +1,21 @@
 <script lang="ts">
-    import type { NetworkData } from "../Schemas/NetworkData";
-    import type { TokenData } from "../Schemas/TokenData";
     import { genericDataStore } from "../Stores/GenericDataStore";
     import { walletListStore } from "../Stores/WalletListStore";
-    import { networkListStore } from "../Stores/NetworkListStore";
+    import { networkCollectionStore } from "../Stores/NetworkCollectionStore";
     import { tokenListStore } from "../Stores/TokenListStore";
+    import type { FetchToken } from "../Services/Web3Service";
+    import { Web3Service } from "../Services/Web3Service";
+    import type { NetworkData } from "../Schemas/NetworkData";
+    import type { TokenData } from "../Schemas/TokenData";
 
     let walletAddress: string;
     let networkData: NetworkData | null;
     let tokens: TokenData[];
 
     $: {
-        if ($genericDataStore["selectedNetworkIndex"] != null) {
-            if ($networkListStore[$walletListStore[$genericDataStore["selectedWalletIndex"]].id]) {
-                networkData = $networkListStore[$walletListStore[$genericDataStore["selectedWalletIndex"]].id][$genericDataStore["selectedNetworkIndex"]];
+        if ($genericDataStore["selectedNetworkType"] != null) {
+            if ($networkCollectionStore[$walletListStore[$genericDataStore["selectedWalletIndex"]].id]) {
+                networkData = $networkCollectionStore[$walletListStore[$genericDataStore["selectedWalletIndex"]].id][$genericDataStore["selectedNetworkType"]];
             } else {
                 networkData = null;
             }
@@ -33,6 +35,32 @@
             tokens = [];
         }
     }
+
+    let updateAmounts = async () => {
+        if (networkData) {
+            let fetchList: FetchToken[] = [
+                { walletType: networkData.type, holderAddress: networkData.walletAddress, isContract: false }
+            ];
+
+            if (tokens) {
+                for (let token of tokens) {
+                    fetchList.push({
+                        walletType: networkData.type,
+                        holderAddress: networkData.walletAddress,
+                        isContract: true,
+                        contractAddress: token.contractAddress
+                    });
+                }
+            }
+
+            let amounts = await Web3Service.getTokenAmounts(fetchList);
+            let networkDataList: { [walletId: string]: NetworkData[] } = {
+                ...$networkCollectionStore
+            }
+            let allNetworkData: NetworkData[] = networkDataList[$walletListStore[$genericDataStore["selectedWalletIndex"]].id];
+
+        }
+    };
 
     let copyAddress = async () => {
         if (walletAddress !== "Copied") {

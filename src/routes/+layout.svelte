@@ -5,9 +5,10 @@
     import SideBarComponent from "../lib/Components/SideBarComponent.svelte";
     import { genericDataStore } from "../lib/Stores/GenericDataStore";
     import { walletListStore } from "../lib/Stores/WalletListStore";
-    import { networkListStore } from "../lib/Stores/NetworkListStore";
+    import type { NetworkCollection } from "../lib/Stores/NetworkCollectionStore";
+    import { networkCollectionStore } from "../lib/Stores/NetworkCollectionStore";
     import type { WalletData } from "../lib/Schemas/WalletData";
-    import { NetworkData } from "../lib/Schemas/NetworkData";
+    import type { NetworkData } from "../lib/Schemas/NetworkData";
 
     let hasLoaded = false;
     onMount(async () => {
@@ -22,24 +23,25 @@
             `${$genericDataStore["userDataPath"]}\\walletDataList.json`
         ) || []) as WalletData[];
 
-        $networkListStore = await getListOfNetworks();
+        $networkCollectionStore = await getListOfNetworks();
 
         setTimeout(() => {
             hasLoaded = true;
         }, 500);
     });
 
+    // Copy of function in +page.svelte
     let getListOfNetworks = async () => {
-        let perWalletNetworks: { [walletId: string]: NetworkData[] } = {};
+        let networkCollection: NetworkCollection = {};
         for (let wallet of $walletListStore) {
             let data = await window.electronAPI.readJsonFile(
                 `${$genericDataStore["userDataPath"]}\\wallets\\${wallet.id}\\networkDataList.json`
             );
             if (data != null) {
-                perWalletNetworks[wallet.id] = data as NetworkData[];
+                networkCollection[wallet.id] = data as { [networkType: string]: NetworkData };
             }
         }
-        return perWalletNetworks;
+        return networkCollection;
     };
 </script>
 

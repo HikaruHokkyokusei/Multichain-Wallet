@@ -8,7 +8,7 @@ interface GenericData {
     showPopup?: boolean,
     popupType?: string,
     selectedWalletIndex?: number,
-    selectedNetworkIndex?: number
+    selectedNetworkType?: string
 }
 
 export const genericDataStore: Writable<GenericData> = writable({

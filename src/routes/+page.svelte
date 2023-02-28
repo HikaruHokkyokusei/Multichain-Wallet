@@ -9,7 +9,8 @@
     import ImportWalletComponent from "../lib/Components/ImportWalletComponent.svelte";
     import { genericDataStore } from "../lib/Stores/GenericDataStore";
     import { walletListStore } from "../lib/Stores/WalletListStore";
-    import { networkListStore } from "../lib/Stores/NetworkListStore";
+    import type { NetworkCollection } from "../lib/Stores/NetworkCollectionStore";
+    import { networkCollectionStore } from "../lib/Stores/NetworkCollectionStore";
     import { tokenListStore } from "../lib/Stores/TokenListStore";
     import type { NetworkData } from "../lib/Schemas/NetworkData";
     import type { TokenData } from "../lib/Schemas/TokenData";
@@ -28,63 +29,38 @@
     };
 
     let setActiveWalletAndNetwork = async (event) => {
-        let walletIndex: number = event.detail.walletIndex, networkIndex: number = event.detail.networkIndex;
-        $networkListStore = {};
+        let walletIndex: number = event.detail.walletIndex, networkIndex: string = event.detail.networkType;
+        $networkCollectionStore = {};
         $tokenListStore = [];
 
         $genericDataStore = {
             ...$genericDataStore,
             "selectedWalletIndex": walletIndex,
-            "selectedNetworkIndex": networkIndex
+            "selectedNetworkType": networkIndex
         }
 
-        $networkListStore = await getListOfNetworks();
+        $networkCollectionStore = await getListOfNetworks();
 
         $tokenListStore = (await window.electronAPI.readJsonFile(
             `${$genericDataStore["userDataPath"]}\\wallets\\` +
             `${$walletListStore[walletIndex]["id"]}\\` +
-            `${$networkListStore[networkIndex]}\\tokenDataList.json`
+            `${$networkCollectionStore[networkIndex]}\\tokenDataList.json`
         ) || []) as TokenData[];
     };
 
+    // Copy of function in +layout.svelte
     let getListOfNetworks = async () => {
-        let perWalletNetworks: { [walletId: string]: NetworkData[] } = {};
+        let networkCollection: NetworkCollection = {};
         for (let wallet of $walletListStore) {
             let data = await window.electronAPI.readJsonFile(
                 `${$genericDataStore["userDataPath"]}\\wallets\\${wallet.id}\\networkDataList.json`
             );
             if (data != null) {
-                perWalletNetworks[wallet.id] = data as NetworkData[];
+                networkCollection[wallet.id] = data as { [networkType: string]: NetworkData };
             }
         }
-        return perWalletNetworks;
+        return networkCollection;
     };
-
-    // let updateAmounts = () => {
-    //    if (networkData) {
-    //         let fetchList: FetchToken[] = [
-    //             {walletType: networkData.type, holderAddress: networkData.walletAddress, isContract: false}
-    //         ];
-    //         if (tokens) {
-    //             for (let token of tokens) {
-    //                 fetchList.push({
-    //                     walletType: networkData.type,
-    //                     holderAddress: networkData.walletAddress,
-    //                     isContract: true,
-    //                     contractAddress: token.contractAddress
-    //                 });
-    //             }
-    //         }
-    //         Web3Service.getTokenAmounts(fetchList).then((amounts) => {
-    //             if (networkData) {
-    //                 $walletListStore = {
-    //                     ...$walletListStore,
-    //
-    //                 };
-    //             }
-    //         });
-    //    }
-    // };
 </script>
 
 <div class="Wrapper CenterRowFlex" style="background-color: #404258; position:relative;">

@@ -1,14 +1,14 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     import Loader from "./Loader.svelte";
-    import { genericDataStore } from "../Stores/GenericDataStore";
-    import { walletListStore } from "../Stores/WalletListStore";
-    import { networkListStore } from "../Stores/NetworkListStore";
     import { Web3Service } from "../Services/Web3Service";
     import { WalletService } from "../Services/WalletService";
+    import { genericDataStore } from "../Stores/GenericDataStore";
+    import { walletListStore } from "../Stores/WalletListStore";
+    import type { NetworkCollection } from "../Stores/NetworkCollectionStore";
+    import { networkCollectionStore } from "../Stores/NetworkCollectionStore";
     import type { SupportedNetworkData } from "../Configs/SupportedNetworks";
     import { supportedNetworkList } from "../Configs/SupportedNetworks";
-    import type { NetworkData } from "../Schemas/NetworkData";
 
     let showPhase = 0;
     let dispatch = createEventDispatcher();
@@ -39,11 +39,11 @@
                     walletNetworkData.walletData
                 ];
 
-                let networkList: { [walletId: string]: NetworkData[] } = {
-                    ...$networkListStore
+                let networkList: NetworkCollection = {
+                    ...$networkCollectionStore
                 };
                 networkList[walletNetworkData.walletData.id] = walletNetworkData.networkDataList;
-                $networkListStore = networkList;
+                $networkCollectionStore = networkList;
 
                 await window.electronAPI.writeToFile(
                     `${$genericDataStore["userDataPath"]}\\walletDataList.json`,
@@ -53,7 +53,7 @@
                 await window.electronAPI.writeToFile(
                     `${$genericDataStore["userDataPath"]}\\wallets\\` +
                     `${walletNetworkData.walletData.id}\\networkDataList.json`,
-                    JSON.stringify($networkListStore[walletNetworkData.walletData.id])
+                    JSON.stringify($networkCollectionStore[walletNetworkData.walletData.id])
                 );
             }
         }

@@ -7,7 +7,7 @@ import type { NetworkData } from "../Schemas/NetworkData";
 export class WalletService {
     public static newWalletData = (walletName: string, newWallet: WalletCredentials, network: SupportedNetworkData) => {
         let walletData: WalletData | null = null;
-        let networkDataList: NetworkData[] | null = null;
+        let networkDataList: { [networkType: string]: NetworkData } | null = null;
 
         if (newWallet.walletAddress != null && newWallet.privateKey != null) {
             walletData = {
@@ -21,17 +21,16 @@ export class WalletService {
                 walletData["index"] = newWallet.index; // TODO: Encrypt this...
             }
 
-            networkDataList = [
-                {
-                    "name": network["name"],
-                    "symbol": network["symbol"],
-                    "type": network["type"],
-                    "decimals": network["decimals"],
-                    "amount": 0,
-                    "walletAddress": newWallet.walletAddress,
-                    "privateKey": newWallet.privateKey, // TODO: Encrypt this...
-                }
-            ];
+            networkDataList = {};
+            networkDataList[network["type"]] = {
+                "name": network["name"],
+                "symbol": network["symbol"],
+                "type": network["type"],
+                "decimals": network["decimals"],
+                "amount": 0,
+                "walletAddress": newWallet.walletAddress,
+                "privateKey": newWallet.privateKey, // TODO: Encrypt this...
+            };
         }
 
         return {

@@ -432,22 +432,22 @@ export class Web3Service {
         }
     };
 
-    public static getTokenAmounts = async (tokens: FetchToken[]): Promise<string[]> => {
-        let result: string[] = [];
+    public static getTokenAmounts = async (tokens: FetchToken[]): Promise<number[]> => {
+        let result: number[] = [];
 
         for (let token of tokens) {
             if (token.walletType === "eth" || token.walletType === "bsc" || token.walletType === "polygon") {
-                let balance = "";
+                let balance = 0;
 
                 if (token.isContract) {
                     if (token.contractAddress != null) {
-                        balance = await (new this._evmWeb3Instances[token.walletType].eth.Contract(
+                        balance = parseInt(await (new this._evmWeb3Instances[token.walletType].eth.Contract(
                             this._evmErc20ContractABI,
                             token.contractAddress
-                        )).methods["balanceOf"].call(token.holderAddress);
+                        )).methods["balanceOf"].call(token.holderAddress));
                     }
                 } else {
-                    balance = await this._evmWeb3Instances[token.walletType].eth.getBalance(token.holderAddress);
+                    balance = parseInt(await this._evmWeb3Instances[token.walletType].eth.getBalance(token.holderAddress));
                 }
 
                 result.push(balance);

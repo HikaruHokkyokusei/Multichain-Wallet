@@ -2,7 +2,7 @@
     import { createEventDispatcher } from "svelte";
     import { genericDataStore } from "../Stores/GenericDataStore.js";
     import { walletListStore } from "../Stores/WalletListStore";
-    import { networkListStore } from "../Stores/NetworkListStore.js";
+    import { networkCollectionStore } from "../Stores/NetworkCollectionStore.js";
 
     let dispatch = createEventDispatcher();
 </script>
@@ -26,15 +26,22 @@
                         </div>
                     </div>
                     <div style="height: 3px; width: 100%;"></div>
-                    {#if $networkListStore[$walletListStore[idx1].id] != null}
-                        {#each $networkListStore[$walletListStore[idx1].id] as networkData, idx2}
+
+                    {#if $networkCollectionStore[$walletListStore[idx1].id] != null}
+                        {@const networkCollection = $networkCollectionStore[$walletListStore[idx1].id]}
+                        {#each Object.keys(networkCollection) as networkType}
+                            {@const networkData = networkCollection[networkType]}
+
                             <div style="height: 2px; width: 100%;"></div>
                             <div on:click="{() => dispatch('setActiveWalletAndNetwork', {
-                                'walletIndex': idx1,
-                                'networkIndex': idx2
-                            })}"
+                                     'walletIndex': idx1,
+                                     'networkType': networkType
+                                 })}"
                                  class="CenterRowFlex WalletChainDataHolder"
-                                 class:WalletElementSelected={$genericDataStore["selectedWalletIndex"] === idx1 && $genericDataStore["selectedNetworkIndex"] === idx2}
+                                 class:WalletElementSelected={
+                                     $genericDataStore["selectedWalletIndex"] === idx1 &&
+                                     $genericDataStore["selectedNetworkType"] === networkType
+                                 }
                             >
                                 <div>{networkData["symbol"]}</div>
                                 <div>{(networkData["amount"] / (10 ** networkData["decimals"])).toFixed(3)}</div>
