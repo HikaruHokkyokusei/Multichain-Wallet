@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import { genericDataStore } from "$lib/Stores/GenericDataStore";
+    import { genericDataStore } from "../Stores/GenericDataStore";
 
     let isMouseHoveringOnNavBar = false;
 

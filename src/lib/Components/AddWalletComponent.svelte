@@ -1,10 +1,10 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import { Web3Service } from "$lib/Services/Web3Service";
-    import { walletListStore } from "$lib/Stores/WalletListStore";
-    import type { SupportedNetworkData } from "$lib/Configs/SupportedNetworks";
-    import { supportedNetworkList } from "$lib/Configs/SupportedNetworks";
-    import { genericDataStore } from "$lib/Stores/GenericDataStore";
+    import { Web3Service } from "../Services/Web3Service";
+    import { walletListStore } from "../Stores/WalletListStore";
+    import type { SupportedNetworkData } from "../Configs/SupportedNetworks";
+    import { supportedNetworkList } from "../Configs/SupportedNetworks";
+    import { genericDataStore } from "../Stores/GenericDataStore";
     import Loader from "./Loader.svelte";
     import { v4 } from "uuid";
 
@@ -26,8 +26,9 @@
 
     let createNewWallet = async (network: SupportedNetworkData) => {
         goToNextPhase();
-        if (network["type"] === "eth" || network["type"] === "bsc" || network["type"] === "polygon") {
-            let newWallet = await Web3Service.createWallet(network["type"]);
+        let networkType = network["type"];
+        if (networkType === "eth" || networkType === "bsc" || networkType === "polygon") {
+            let newWallet = await Web3Service.createWallet(networkType);
             $walletListStore = [
                 ...$walletListStore,
                 {

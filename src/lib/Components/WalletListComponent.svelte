@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { walletListStore } from "$lib/Stores/WalletListStore";
-    import { genericDataStore } from "$lib/Stores/GenericDataStore.js";
+    import { walletListStore } from "../Stores/WalletListStore";
+    import { genericDataStore } from "../Stores/GenericDataStore.js";
 
-    let setActiveWalletAndNetwork = (walletIndex, networkIndex) => {
+    let setActiveWalletAndNetwork = (walletIndex: number, networkIndex: number) => {
         $genericDataStore = {
             ...$genericDataStore,
             "selectedWalletIndex": walletIndex,

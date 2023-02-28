@@ -48,6 +48,7 @@
 
 <style>
     .PrimarySubComponent {
+        max-width: 33.334%;
         flex: 1 0 0;
         height: 100%;
     }

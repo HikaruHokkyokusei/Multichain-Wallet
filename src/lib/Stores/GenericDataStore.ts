@@ -6,8 +6,8 @@ interface GenericData {
     appPasswordHash?: string,
     isAppLocked?: boolean,
     showPopup?: boolean,
-    selectedWalletIndex?: string,
-    selectedNetworkIndex?: string
+    selectedWalletIndex?: number,
+    selectedNetworkIndex?: number
 }
 
 export const genericDataStore: Writable<GenericData> = writable({

@@ -1,6 +1,6 @@
 "use strict";
 
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, clipboard } = require('electron');
 const fs = require('fs');
 const crypto = require('crypto');
 
@@ -8,6 +8,10 @@ const appPasswordConfigs = {
     hashBytes: 64,
     saltBytes: 32,
     iterations: 1600000
+};
+
+const copyToClipboard = (event, text) => {
+    clipboard.writeText(text);
 };
 
 const hashAppPassword = async (event, password) => {
@@ -83,6 +87,7 @@ const createWindow = () => {
 };
 
 app.whenReady().then(() => {
+    ipcMain.handle('clipboard:copyToClipboard', copyToClipboard);
     ipcMain.handle('fileOperation:getUserDataDirPath', getUserDataDirPath);
     ipcMain.handle('fileOperation:readJsonFile', readJsonFile);
     ipcMain.handle('fileOperation:readTextFile', readTextFile);

@@ -10,6 +10,7 @@ declare global {
 
     interface Window {
         electronAPI: {
+            copyToClipboard: (string) => Promise<undefined>,
             getUserDataDirPath: () => Promise<string>,
             readJsonFile: (string) => Promise<object | null>,
             readTextFile: (string) => Promise<string | null>,

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { genericDataStore } from "$lib/Stores/GenericDataStore";
+    import { genericDataStore } from "../Stores/GenericDataStore";
     import { createEventDispatcher } from "svelte";
 
     let passError = "";
