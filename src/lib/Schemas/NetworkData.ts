@@ -3,7 +3,7 @@ import type { SupportedNetworkData } from "../Configs/SupportedNetworks";
 
 export interface NetworkData extends SupportedNetworkData {
     "amount": number,
-    "publicKey": string,
+    "walletAddress": string,
     "privateKey": string,
     "tokens"?: TokenData[]
 }

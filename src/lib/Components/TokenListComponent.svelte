@@ -6,7 +6,7 @@
     import type { TokenData } from "../Schemas/TokenData";
 
     let wallet: WalletData;
-    let publicKey: string;
+    let walletAddress: string;
     let network: NetworkData;
     let tokens: TokenData[] | undefined;
 
@@ -19,7 +19,7 @@
     $: {
         if ($genericDataStore["selectedNetworkIndex"] != null && wallet) {
             network = wallet["blockchainNetworks"][$genericDataStore["selectedNetworkIndex"]];
-            publicKey = network["publicKey"];
+            walletAddress = network["walletAddress"];
         }
     }
 
@@ -30,12 +30,12 @@
     }
 
     let copyAddress = async () => {
-        if (publicKey !== "Copied") {
-            await window.electronAPI.copyToClipboard(publicKey);
+        if (walletAddress !== "Copied") {
+            await window.electronAPI.copyToClipboard(walletAddress);
 
-            publicKey = "Copied";
+            walletAddress = "Copied";
             setTimeout(() => {
-                publicKey = network["publicKey"];
+                walletAddress = network["walletAddress"];
             }, 1000);
         }
     };
@@ -53,11 +53,11 @@
                 <div style="font-size: 30px; font-weight: bold; cursor: pointer;">{network["symbol"]}</div>
             </div>
 
-            <div class="CenterRowFlex PublicKeyHolder">
+            <div class="CenterRowFlex WalletAddressHolder">
                 <div style="width: 85%; height: 100%; overflow: hidden;">
-                    {publicKey}
+                    {walletAddress}
                 </div>
-                {#if publicKey !== "Copied"}
+                {#if walletAddress !== "Copied"}
                     <diV style="width: 40px; height: 100%; text-align: left; display: flex;">
                         ...&nbsp;&nbsp;
                         <i on:click={copyAddress} class="fa-regular fa-clipboard"
@@ -90,7 +90,7 @@
         border-radius: 10px;
     }
 
-    .PublicKeyHolder {
+    .WalletAddressHolder {
         width: 100%;
         flex: 1 0 0;
         font-size: 20px;

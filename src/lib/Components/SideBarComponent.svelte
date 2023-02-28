@@ -4,10 +4,11 @@
 
     let isMouseHoveringOnNavBar = false;
 
-    let showPopup = () => {
+    let showPopup = (popupType: string) => {
         $genericDataStore = {
             ...$genericDataStore,
-            "showPopup": true
+            "showPopup": true,
+            "popupType": popupType
         };
     };
 </script>
@@ -28,7 +29,8 @@
     <div style="height: 15px; width: 100%;"></div>
 
     <div class="CenterColumnFlex SideBarOptionHolder">
-        <div on:click={showPopup} class="CenterRowFlex" style="width: 100%; cursor: pointer; height: 50px;">
+        <div on:click={() => showPopup("addWallet")} class="CenterRowFlex"
+             style="width: 100%; cursor: pointer; height: 50px;">
             <i class="fa-solid fa-plus" style="color: black; opacity: 0.4; font-size: 40px;"></i>
             {#if isMouseHoveringOnNavBar}
                 <div style="width: 10px;"></div>
@@ -38,7 +40,8 @@
 
         <div style="height: 15px;"></div>
 
-        <div class="CenterRowFlex" style="width: 100%; cursor: pointer; height: 50px;">
+        <div on:click={() => showPopup("importWallet")} class="CenterRowFlex"
+             style="width: 100%; cursor: pointer; height: 50px;">
             <i class="fa-solid fa-file-import" style="color: black; opacity: 0.4; font-size: 30px;"></i>
             {#if isMouseHoveringOnNavBar}
                 <div style="width: 10px;"></div>

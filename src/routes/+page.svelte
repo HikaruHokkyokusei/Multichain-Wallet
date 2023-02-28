@@ -7,6 +7,7 @@
     import UnlockAppComponent from "$lib/Components/UnlockAppComponent.svelte";
     import PopupComponent from "$lib/Components/PopupComponent.svelte";
     import AddWalletComponent from "$lib/Components/AddWalletComponent.svelte";
+    import ImportWalletComponent from "../lib/Components/ImportWalletComponent.svelte";
 
     let unlockWallet = () => {
         $genericDataStore = {
@@ -40,7 +41,11 @@
 
         {#if $genericDataStore["showPopup"]}
             <PopupComponent on:closePopup={closePopup}>
-                <AddWalletComponent on:closePopup={closePopup}></AddWalletComponent>
+                {#if $genericDataStore["popupType"] === "addWallet"}
+                    <AddWalletComponent on:closePopup={closePopup}></AddWalletComponent>
+                {:else if $genericDataStore["popupType"] === "importWallet"}
+                    <ImportWalletComponent on:closePopup={closePopup}></ImportWalletComponent>
+                {/if}
             </PopupComponent>
         {/if}
     {/if}

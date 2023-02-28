@@ -1,17 +1,24 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import Loader from "./Loader.svelte";
     import { Web3Service } from "../Services/Web3Service";
-    import { newWalletData } from "../Services/WalletService";
     import { walletListStore } from "../Stores/WalletListStore";
-    import { genericDataStore } from "../Stores/GenericDataStore";
     import type { SupportedNetworkData } from "../Configs/SupportedNetworks";
     import { supportedNetworkList } from "../Configs/SupportedNetworks";
+    import { genericDataStore } from "../Stores/GenericDataStore";
+    import Loader from "./Loader.svelte";
+    import { newWalletData } from "../Services/WalletService";
 
     let showPhase = 0;
     let dispatch = createEventDispatcher();
 
     let walletName = "";
+    let selectedImportEntityType = 0;
+    let importEntity = "";
+    let allowedImportTypes = [
+        { id: 0, name: "Private Key" },
+        { id: 1, name: "Phrases" }
+    ];
+
     let goToNextPhase = () => {
         switch (showPhase) {
             case 0: {
@@ -24,11 +31,10 @@
         showPhase += 1;
     };
 
-    let createNewWallet = async (network: SupportedNetworkData) => {
+    let importNewWallet = async (network: SupportedNetworkData) => {
         goToNextPhase();
-
-        if (network.type === "eth" || network.type === "bsc" || network.type === "polygon") {
-            let newWallet = await Web3Service.createWallet(network.type);
+        if ((selectedImportEntityType === 0 || selectedImportEntityType === 1) && (network.type === "eth" || network.type === "bsc" || network.type === "polygon")) {
+            let newWallet = Web3Service.importWallet(selectedImportEntityType, importEntity, network.type);
 
             let walletListData = newWalletData(walletName, newWallet, network);
             if (walletListData != null) {
@@ -43,7 +49,6 @@
                 JSON.stringify($walletListStore)
             );
         }
-
         dispatch("closePopup");
     };
 </script>
@@ -58,16 +63,33 @@
         </div>
         <button on:click={goToNextPhase}>Confirm</button>
     {:else if showPhase === 1}
+        <div class="CenterColumnFlex" style="width: 100%; height: 40%; justify-content: space-around;">
+            <div class="CenterColumnFlex" style="width: 100%; text-align: center; font-size: 30px;">
+                Import from:
+                <br>
+                <select bind:value={selectedImportEntityType}>
+                    {#each allowedImportTypes as importType}
+                        <option value="{importType['id']}">
+                            {importType["name"]}
+                        </option>
+                    {/each}
+                </select>
+            </div>
+            <input bind:value={importEntity} placeholder="{allowedImportTypes[selectedImportEntityType]['name']}"
+                   type="text"/>
+        </div>
+        <button on:click={goToNextPhase}>Confirm</button>
+    {:else if showPhase === 2}
         {#each supportedNetworkList as network}
             <div class="CenterRowFlex WalletTypeDataHolderWrapper">
                 <button class="CenterRowFlex WalletTypeDataHolder"
-                        on:click={() => createNewWallet(network)}
+                        on:click={() => importNewWallet(network)}
                 >
                     {network["name"]}
                 </button>
             </div>
         {/each}
-    {:else if showPhase === 2}
+    {:else if showPhase === 3}
         <Loader></Loader>
     {/if}
 </div>
@@ -103,7 +125,7 @@
     }
 
     .WalletTypeDataHolder:hover {
-        width: calc(95% + 10px);
+        width: calc(95% + 10);
         height: 65px;
     }
 
@@ -136,5 +158,12 @@
 
     input:active {
         outline: none;
+    }
+
+    select {
+        outline: none;
+        border: none;
+
+        font-size: 25px;
     }
 </style>

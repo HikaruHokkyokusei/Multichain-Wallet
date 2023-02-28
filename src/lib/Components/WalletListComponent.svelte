@@ -17,6 +17,7 @@
     </div>
     <div class="CenterColumnFlex WalletBody">
         {#each $walletListStore as { id, name, blockchainNetworks }, idx1}
+            <div style="width: 100%; height: 10px;"></div>
             <div class="WalletElement">
                 <div class="WalletNameHolder">{name}</div>
                 <div style="height: 3px; width: 100%;"></div>
