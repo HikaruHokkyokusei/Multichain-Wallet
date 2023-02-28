@@ -1,7 +1,7 @@
 <script lang="ts">
     import { genericDataStore } from "../Stores/GenericDataStore.js";
-    import { tokenListStore } from "../Stores/TokenListStore";
     import { walletListStore } from "../Stores/WalletListStore";
+    import { tokenListStore } from "../Stores/TokenListStore";
     import type { TokenData } from "../Schemas/TokenData";
 
     let setActiveWalletAndNetwork = (walletIndex: number, networkIndex: number) => {
@@ -35,8 +35,10 @@
                     <div>
                         {name}
                     </div>
-                    <i class="fa-solid fa-ellipsis-vertical"
-                       style="font-size: 17px; cursor: pointer; color: rgba(10, 50, 100, 0.85);"></i>
+                    <div class="CenterRowFlex" style="width: 20px; cursor: pointer">
+                        <i class="fa-solid fa-ellipsis-vertical"
+                           style="font-size: 17px; color: rgba(10, 50, 100, 0.85);"></i>
+                    </div>
                 </div>
                 <div style="height: 3px; width: 100%;"></div>
                 {#each blockchainNetworks as blockchainNetwork, idx2}
