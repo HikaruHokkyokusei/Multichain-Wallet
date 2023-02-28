@@ -1,13 +1,25 @@
 <script lang="ts">
-    import { walletListStore } from "../Stores/WalletListStore";
     import { genericDataStore } from "../Stores/GenericDataStore.js";
+    import { tokenListStore } from "../Stores/TokenListStore";
+    import { walletListStore } from "../Stores/WalletListStore";
+    import type { TokenData } from "../Schemas/TokenData";
 
     let setActiveWalletAndNetwork = (walletIndex: number, networkIndex: number) => {
+        $tokenListStore = [];
+
         $genericDataStore = {
             ...$genericDataStore,
             "selectedWalletIndex": walletIndex,
             "selectedNetworkIndex": networkIndex
         }
+
+        window.electronAPI.readJsonFile(
+            `${$genericDataStore["userDataPath"]}/wallets/` +
+            $walletListStore[walletIndex]["id"] +
+            `/tokenList.json`
+        ).then((data) => {
+            $tokenListStore = (data || []) as TokenData[];
+        });
     };
 </script>
 
@@ -19,7 +31,13 @@
         {#each $walletListStore as { id, name, blockchainNetworks }, idx1}
             <div style="width: 100%; height: 10px;"></div>
             <div class="WalletElement">
-                <div class="WalletNameHolder">{name}</div>
+                <div class="CenterRowFlex WalletNameHolder" style="justify-content: space-between">
+                    <div>
+                        {name}
+                    </div>
+                    <i class="fa-solid fa-ellipsis-vertical"
+                       style="font-size: 17px; cursor: pointer; color: rgba(10, 50, 100, 0.85);"></i>
+                </div>
                 <div style="height: 3px; width: 100%;"></div>
                 {#each blockchainNetworks as blockchainNetwork, idx2}
                     <div style="height: 2px; width: 100%;"></div>
