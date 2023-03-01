@@ -9,6 +9,24 @@
     import type { NetworkData } from "../Schemas/NetworkData";
     import type { TokenData } from "../Schemas/TokenData";
 
+    let showMenu = false;
+    let addNewToken = () => {
+        if (networkData) {
+            $genericDataStore = {
+                ...$genericDataStore,
+                "showPopup": true,
+                "popupType": "importEvmErc20Token",
+                "popupParams": {
+                    "walletId": $walletListStore[$genericDataStore["selectedWalletIndex"]].id,
+                    "existingTokens": tokens || {},
+                    "holderAddress": networkData.walletAddress,
+                    "networkType": networkData.type
+                }
+            };
+        }
+        showMenu = false;
+    };
+
     let walletAddress: string;
     let networkData: NetworkData | null;
     let tokens: { [contractAddress: string]: TokenData };
@@ -111,9 +129,17 @@
             <div class="CenterRowFlex WalletAddressHolder" style="justify-content: flex-end; text-align: right;">
                 <i on:click={updateAmounts} class="fa-solid fa-arrows-rotate"
                    style="font-size: 18px; cursor: pointer;"></i>
-                <div style="width: 15px;"></div>
-                <i class="fa-solid fa-ellipsis-vertical" style="font-size: 18px; cursor: pointer;"></i>
-                <div style="width: 15px;"></div>
+                <div style="width: 10px;"></div>
+                <div on:click={() => {showMenu = !showMenu;}} style="width: 15px; text-align: center;">
+                    <i class="fa-solid fa-ellipsis-vertical" style="font-size: 18px; cursor: pointer;"></i>
+                </div>
+                <div style="width: 5px;"></div>
+                {#if showMenu}
+                    <div class="CenterColumnFlex OptionsMenu">
+                        <div on:click={addNewToken} style="width: 100%; cursor:pointer;">Add New Token</div>
+                        <div style="width: 100%; cursor:pointer;">Show Private Key</div>
+                    </div>
+                {/if}
             </div>
 
             <div class="CenterColumnFlex" style="width: 100%; flex: 4 0 0;">
@@ -160,6 +186,31 @@
         align-items: center;
 
         border-radius: 10px;
+
+        position: relative;
+        z-index: 2;
+    }
+
+    .OptionsMenu {
+        width: 150px;
+        height: 70px;
+
+        position: absolute;
+        top: 33px;
+        right: -30px;
+        z-index: 3;
+
+        justify-content: flex-start;
+
+        border-radius: 10px;
+        background-color: rgba(237, 255, 232, 0.85);
+
+        font-size: 18px;
+        color: #101028;
+        text-align: center;
+
+        box-sizing: border-box;
+        padding: 10px 0;
     }
 
     .WalletAddressHolder {

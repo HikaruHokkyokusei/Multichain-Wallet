@@ -370,8 +370,8 @@ export class Web3Service {
         }
     ];
 
-    public static createWallet = async (walletType: string): Promise<WalletCredentials> => {
-        if (walletType === "eth" || walletType === "bsc" || walletType === "polygon") {
+    public static createWallet = async (networkType: string): Promise<WalletCredentials> => {
+        if (networkType === "eth" || networkType === "bsc" || networkType === "polygon") {
             let wallet = await ethers.Wallet.createRandom();
             return {
                 "walletAddress": wallet.address,
@@ -394,11 +394,11 @@ export class Web3Service {
      * Function to import wallet from Private Key (importType = 0) or Phrases (importType = 1)
      * @param importType
      * @param importEntity Lower case space seperated phrases or the private key
-     * @param walletType
+     * @param networkType
      * @param childIndex
      */
-    public static importWallet = (importType: 0 | 1, importEntity: string, walletType: string, childIndex?: number): WalletCredentials => {
-        if (walletType === "eth" || walletType === "bsc" || walletType === "polygon") {
+    public static importWallet = (importType: 0 | 1, importEntity: string, networkType: string, childIndex?: number): WalletCredentials => {
+        if (networkType === "eth" || networkType === "bsc" || networkType === "polygon") {
             if (importType === 0) {
                 let wallet = new ethers.Wallet(importEntity);
                 return {
@@ -437,6 +437,37 @@ export class Web3Service {
         }
     };
 
+    public static getChecksumAddress = (networkType: string, address: string) => {
+        if (networkType === "eth" || networkType === "bsc" || networkType === "polygon") {
+            if (Web3.utils.isAddress(address)) {
+                return Web3.utils.toChecksumAddress(address);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    };
+
+    public static getEvmErc20TokenDetails = async (networkType: string, tokenContractAddress: string, holderAddress: string) => {
+        try {
+            if (networkType === "eth" || networkType === "bsc" || networkType === "polygon") {
+                let contract = new this._evmWeb3Instances[networkType].eth.Contract(this._evmErc20ContractABI, tokenContractAddress);
+                return {
+                    "name": await contract.methods["name"]().call(),
+                    "symbol": await contract.methods["symbol"]().call(),
+                    "decimals": parseInt(await contract.methods["decimals"]().call()),
+                    "amount": parseInt(await contract.methods["balanceOf"](holderAddress).call())
+                };
+            } else {
+                return null;
+            }
+        } catch (err) {
+            console.log(err);
+            return null;
+        }
+    };
+
     public static getTokenAmounts = async (tokens: FetchToken[]): Promise<FetchedToken[]> => {
         let result: FetchedToken[] = [];
 
@@ -452,7 +483,7 @@ export class Web3Service {
                     appendObject["amount"] = parseInt(await (new this._evmWeb3Instances[token.walletType].eth.Contract(
                         this._evmErc20ContractABI,
                         token.contractAddress
-                    )).methods["balanceOf"].call(token.holderAddress));
+                    )).methods["balanceOf"](token.holderAddress).call());
                 } else {
                     appendObject["amount"] = parseInt(await this._evmWeb3Instances[token.walletType].eth.getBalance(token.holderAddress));
                 }

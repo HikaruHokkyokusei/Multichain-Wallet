@@ -7,6 +7,7 @@ interface GenericData {
     isAppLocked?: boolean,
     showPopup?: boolean,
     popupType?: string,
+    popupParams?: any,
     selectedWalletIndex?: number,
     selectedNetworkType?: string
 }

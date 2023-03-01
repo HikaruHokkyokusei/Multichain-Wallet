@@ -14,6 +14,7 @@
     import { tokenListStore } from "../lib/Stores/TokenListStore";
     import type { NetworkData } from "../lib/Schemas/NetworkData";
     import type { TokenData } from "../lib/Schemas/TokenData";
+    import ImportEvmErc20TokenComponent from "../lib/Components/ImportEvmErc20TokenComponent.svelte";
 
     let unlockWallet = () => {
         $genericDataStore = {
@@ -24,7 +25,9 @@
     let closePopup = () => {
         $genericDataStore = {
             ...$genericDataStore,
-            "showPopup": false
+            "showPopup": false,
+            "popupType": undefined,
+            "popupParams": undefined
         }
     };
 
@@ -86,6 +89,8 @@
                     <AddWalletComponent on:closePopup={closePopup}></AddWalletComponent>
                 {:else if $genericDataStore["popupType"] === "importWallet"}
                     <ImportWalletComponent on:closePopup={closePopup}></ImportWalletComponent>
+                {:else if $genericDataStore["popupType"] === "importEvmErc20Token"}
+                    <ImportEvmErc20TokenComponent on:closePopup={closePopup}></ImportEvmErc20TokenComponent>
                 {/if}
             </PopupComponent>
         {/if}
