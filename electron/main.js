@@ -15,7 +15,39 @@ const copyToClipboard = (event, text) => {
     clipboard.writeText(text);
 };
 
-const hashAppPassword = async (event, password) => {
+const encryptWithAES256 = (event, data, password) => {
+    const passMd5 = `${crypto.createHash('md5').update(password).digest("hex")}`;
+    let iv = crypto.randomBytes(16);
+
+    const cipher = crypto.createCipheriv('aes-256-cbc', passMd5, iv);
+    let encryptedData = cipher.update(data, "utf-8", "hex");
+
+    encryptedData += cipher.final("hex");
+    iv = iv.toString("hex");
+
+    return {
+        "iv": iv,
+        "data": encryptedData
+    };
+};
+
+const decryptWithAES256 = (event, data, ivHex, password) => {
+    const passMd5 = `${crypto.createHash('md5').update(password).digest("hex")}`;
+    let iv = Buffer.from(ivHex, "hex");
+
+    const decipher = crypto.createDecipheriv('aes-256-cbc', passMd5, iv);
+    let decryptedData = decipher.update(data, "hex", "utf-8");
+
+    try {
+        decryptedData += decipher.final("utf8");
+    } catch {
+        decryptedData = null;
+    }
+
+    return decryptedData;
+};
+
+const hashAppPassword = (event, password) => {
     let salt = crypto.randomBytes(appPasswordConfigs["saltBytes"]);
     let hash = crypto.pbkdf2Sync(
         password,
@@ -34,7 +66,7 @@ const hashAppPassword = async (event, password) => {
 
     return combined.toString("hex");
 };
-const verifyAppPassword = async (event, password, storedHash) => {
+const verifyAppPassword = (event, password, storedHash) => {
     storedHash = Buffer.from(storedHash, "hex");
     let saltBytes = storedHash.readUInt32BE(0);
     let hashBytes = storedHash.length - saltBytes - 8;
@@ -46,7 +78,7 @@ const verifyAppPassword = async (event, password, storedHash) => {
     return verify.toString('binary') === hash;
 };
 
-const getUserDataDirPath = async () => {
+const getUserDataDirPath = () => {
     return app.getPath('userData');
 };
 const readJsonFile = async (event, filePath) => {
@@ -65,7 +97,7 @@ const readTextFile = async (event, filePath) => {
         return null;
     }
 };
-const writeToFile = async (event, filePath, fileData) => {
+const writeToFile = (event, filePath, fileData) => {
     try {
         let path = getDirName(filePath);
         fs.mkdirSync(path, { recursive: true });
@@ -99,6 +131,8 @@ app.whenReady().then(() => {
     ipcMain.handle('fileOperation:writeToFile', writeToFile);
     ipcMain.handle('appPassword:hash', hashAppPassword);
     ipcMain.handle('appPassword:verify', verifyAppPassword);
+    ipcMain.handle('crypto:encryptWithAES256', encryptWithAES256);
+    ipcMain.handle('crypto:decryptWithAES256', decryptWithAES256);
 
     createWindow();
 
