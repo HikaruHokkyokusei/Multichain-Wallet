@@ -93,7 +93,6 @@
 
     .WalletChainDataHolder:hover {
         background-color: #5b65a4;
-        border: 1px solid wheat;
     }
 
     .WalletElementSelected {

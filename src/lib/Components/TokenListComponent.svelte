@@ -55,6 +55,19 @@
         }
     }
 
+    let copyAddress = async () => {
+        if (walletAddress !== "Copied") {
+            await window.electronAPI.copyToClipboard(walletAddress);
+
+            walletAddress = "Copied";
+            setTimeout(() => {
+                if (networkData) {
+                    walletAddress = networkData["walletAddress"];
+                }
+            }, 1000);
+        }
+    };
+
     let updateAmounts = async () => {
         // TODO: Check for race conditions...
         if (networkData) {
@@ -105,17 +118,11 @@
         }
     };
 
-    let copyAddress = async () => {
-        if (walletAddress !== "Copied") {
-            await window.electronAPI.copyToClipboard(walletAddress);
-
-            walletAddress = "Copied";
-            setTimeout(() => {
-                if (networkData) {
-                    walletAddress = networkData["walletAddress"];
-                }
-            }, 1000);
-        }
+    let selectToken = (tokenAddress) => {
+        $genericDataStore = {
+            ...$genericDataStore,
+            "selectedTokenAddress": tokenAddress
+        };
     };
 </script>
 
@@ -130,10 +137,10 @@
                 <i on:click={updateAmounts} class="fa-solid fa-arrows-rotate"
                    style="font-size: 18px; cursor: pointer;"></i>
                 <div style="width: 10px;"></div>
-                <div on:click={() => {showMenu = !showMenu;}} style="width: 15px; text-align: center;">
-                    <i class="fa-solid fa-ellipsis-vertical" style="font-size: 18px; cursor: pointer;"></i>
+                <div on:click={() => {showMenu = !showMenu;}} style="width: 15px; text-align: center; cursor: pointer;">
+                    <i class="fa-solid fa-ellipsis-vertical" style="font-size: 18px;"></i>
                 </div>
-                <div style="width: 5px;"></div>
+                <div style="width: 10px;"></div>
                 {#if showMenu}
                     <div class="CenterColumnFlex OptionsMenu">
                         <div on:click={addNewToken} style="width: 100%; cursor:pointer;">Add New Token</div>
@@ -146,7 +153,8 @@
                 <div style="font-size: 45px; font-weight: bold;">
                     {(networkData["amount"] / (10 ** networkData["decimals"])).toFixed(3)}
                 </div>
-                <div style="font-size: 30px; font-weight: bold; cursor: pointer;">{networkData["symbol"]}</div>
+                <div on:click={() => selectToken("0x0")}
+                     style="font-size: 30px; font-weight: bold; cursor: pointer;">{networkData["symbol"]}</div>
             </div>
 
             <div class="CenterRowFlex WalletAddressHolder">
@@ -168,7 +176,10 @@
                 {#each Object.keys(tokens) as tokenAddress}
                     {@const token = tokens[tokenAddress]}
                     <div style="height: 15px;"></div>
-                    <div class="CenterRowFlex TokenDataHolder">
+                    <div on:click={() => selectToken(tokenAddress)}
+                         class:TokenHolderSelected={tokenAddress === $genericDataStore["selectedTokenAddress"]}
+                         class="CenterRowFlex TokenDataHolder"
+                    >
                         <div>{token.symbol}</div>
                         <div>{(token.amount / (10 ** token.decimals)).toFixed(3)}</div>
                     </div>
@@ -232,7 +243,7 @@
         padding: 0 15px;
 
         justify-content: space-between;
-        background-color: rgba(161, 142, 118, 0.5);
+        background-color: rgba(161, 142, 118, 0.45);
 
         border-radius: 10px;
 
@@ -241,6 +252,11 @@
     }
 
     .TokenDataHolder:hover {
-        background-color: rgba(161, 142, 118, 0.75);
+        background-color: rgba(161, 142, 118, 0.8);
+    }
+
+    .TokenHolderSelected {
+        background-color: rgba(161, 142, 118, 0.8);
+        border: 1px solid #d38000;
     }
 </style>

@@ -10,6 +10,7 @@ interface GenericData {
     popupParams?: any,
     selectedWalletIndex?: number,
     selectedNetworkType?: string
+    selectedTokenAddress?: string
 }
 
 export const genericDataStore: Writable<GenericData> = writable({

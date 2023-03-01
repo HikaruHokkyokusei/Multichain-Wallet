@@ -108,11 +108,13 @@
             <div style="width: 15px;"></div>
         </div>
     </div>
-    {#if showLoader}
-        <Loader></Loader>
-    {:else}
-        <button on:click={getTokenDetails}>Confirm</button>
-    {/if}
+    <div class="CenterRowFlex" style="width: 100%; height: 55px;">
+        {#if showLoader}
+            <Loader></Loader>
+        {:else}
+            <button on:click={getTokenDetails}>Confirm</button>
+        {/if}
+    </div>
 </div>
 
 <style>
@@ -146,6 +148,18 @@
         height: 50px;
         width: 150px;
         font-size: 30px;
+
+        transition: 0.2s width, height;
+    }
+
+    button:hover {
+        height: 55px;
+        width: 155px;
+    }
+
+    button:active {
+        height: 45px;
+        width: 145px;
     }
 
     input:active {
