@@ -167,9 +167,11 @@
             {#if tokens}
                 {#each Object.keys(tokens) as tokenAddress}
                     {@const token = tokens[tokenAddress]}
-                    <div style="height: 5px;"></div>
-                    <div>{token.symbol}</div>
-                    <div>{(token.amount / (10 ** token.decimals)).toFixed(3)}</div>
+                    <div style="height: 15px;"></div>
+                    <div class="CenterRowFlex TokenDataHolder">
+                        <div>{token.symbol}</div>
+                        <div>{(token.amount / (10 ** token.decimals)).toFixed(3)}</div>
+                    </div>
                 {/each}
             {/if}
         </div>
@@ -220,5 +222,25 @@
         text-align: center;
         overflow: hidden;
         color: rgba(10, 50, 100, 0.85);
+    }
+
+    .TokenDataHolder {
+        width: 100%;
+        height: 40px;
+
+        box-sizing: border-box;
+        padding: 0 15px;
+
+        justify-content: space-between;
+        background-color: rgba(161, 142, 118, 0.5);
+
+        border-radius: 10px;
+
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .TokenDataHolder:hover {
+        background-color: rgba(161, 142, 118, 0.75);
     }
 </style>

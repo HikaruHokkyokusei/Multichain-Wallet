@@ -69,7 +69,7 @@
 </script>
 
 <div class="CenterColumnFlex ImportTokenWrapper">
-    <div class="CenterColumnFlex" style="width: 100%; height: 40%; justify-content: space-around;">
+    <div class="CenterColumnFlex" style="width: 100%; height: 55%; justify-content: space-around;">
         <div class="CenterColumnFlex" style="width: 100%; text-align: center; font-size: 30px;">
             Token Contract Address:
         </div>
@@ -84,20 +84,28 @@
         </div>
         <div style="height: 15px;"></div>
 
-        <div>
-            Name: <input value="{tokenName}" type="text" readonly>
+        <div class="CenterRowFlex" style="width: 100%; justify-content: space-evenly;">
+            <div style="width: 20%; text-align: right;">Name:&nbsp;</div>
+            <input value="{tokenName}" type="text" readonly>
+            <div style="width: 15px;"></div>
         </div>
         <div style="height: 10px;"></div>
-        <div>
-            Symbol: <input value="{tokenSymbol}" type="text" readonly>
+        <div class="CenterRowFlex" style="width: 100%; justify-content: space-evenly;">
+            <div style="width: 20%; text-align: right;">Symbol:&nbsp;</div>
+            <input value="{tokenSymbol}" type="text" readonly>
+            <div style="width: 15px;"></div>
         </div>
         <div style="height: 10px;"></div>
-        <div>
-            Decimals: <input value="{tokenDecimals}" type="text" readonly>
+        <div class="CenterRowFlex" style="width: 100%; justify-content: space-evenly;">
+            <div style="width: 20%; text-align: right;">Decimals:&nbsp;</div>
+            <input value="{tokenDecimals}" type="text" readonly>
+            <div style="width: 15px;"></div>
         </div>
         <div style="height: 10px;"></div>
-        <div>
-            Balance: <input value="{(tokenBalance / (10 ** tokenDecimals)).toFixed(3)}" type="text" readonly>
+        <div class="CenterRowFlex" style="width: 100%; justify-content: space-evenly;">
+            <div style="width: 20%; text-align: right;">Balance:&nbsp;</div>
+            <input value="{(tokenBalance / (10 ** tokenDecimals)).toFixed(3)}" type="text" readonly>
+            <div style="width: 15px;"></div>
         </div>
     </div>
     {#if showLoader}
@@ -109,7 +117,7 @@
 
 <style>
     .ImportTokenWrapper {
-        width: 400px;
+        width: 450px;
         height: 80%;
 
         border: 2px solid rgba(31, 30, 30, 0.80);

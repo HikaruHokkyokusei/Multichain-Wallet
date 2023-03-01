@@ -80,8 +80,9 @@ const writeToFile = async (event, filePath, fileData) => {
 const createWindow = () => {
     const mainWindow = new BrowserWindow({
         minWidth: 1000,
+        minHeight: 800,
         width: 1000,
-        height: 600,
+        height: 800,
         webPreferences: {
             preload: `${__dirname}/preload.js`
         }
