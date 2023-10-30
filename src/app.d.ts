@@ -16,7 +16,9 @@ declare global {
             readTextFile: (string) => Promise<string | null>,
             writeToFile: (string, string) => Promise<boolean>,
             hashAppPassword: (string) => Promise<string>,
-            verifyAppPassword: (string, string) => Promise<boolean>
+            verifyAppPassword: (string, string) => Promise<boolean>,
+            encryptWithAES256: (data, password) => Promise<{"iv": string, "data": string}>,
+            decryptWithAES256: (data, ivHex, password) => Promise<string | null>
         };
     }
 }

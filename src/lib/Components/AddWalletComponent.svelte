@@ -13,10 +13,18 @@
     let showPhase = 0;
     let dispatch = createEventDispatcher();
 
+    let appPassword = ""
+    let passError = "";
     let walletName = "";
     let goToNextPhase = () => {
         switch (showPhase) {
             case 0: {
+                if (!appPassword) {
+                    return;
+                }
+                break;
+            }
+            case 1: {
                 if (!walletName) {
                     return;
                 }
@@ -26,13 +34,49 @@
         showPhase += 1;
     };
 
-    let createNewWallet = async (network: SupportedNetworkData) => {
+    let verifyPassword = async () => {
+        let pass = appPassword;
+        if (await window.electronAPI.verifyAppPassword(pass, $genericDataStore["appPasswordHash"])) {
+            appPassword = pass;
+            goToNextPhase();
+        } else {
+            passError = "Incorrect Password";
+        }
+    };
+
+    let createNewWallet = async (supportedNetworkData: SupportedNetworkData) => {
         goToNextPhase();
 
-        if (network.type === "eth" || network.type === "bsc" || network.type === "polygon") {
-            let newWallet = await Web3Service.createWallet(network.type);
+        if (supportedNetworkData.type === "eth" || supportedNetworkData.type === "bsc" || supportedNetworkData.type === "polygon") {
+            let newWallet = await Web3Service.createWallet(supportedNetworkData.type);
 
-            let walletNetworkData = WalletService.newWalletData(walletName, newWallet, network);
+            let encryptedPhrases: string | null = null, encryptedIndex: string | null;
+            let phrasesIv: string | null = null, indexIv: string | null = null;
+            if (newWallet.phrase) {
+                let data = await window.electronAPI.encryptWithAES256(newWallet.phrase, appPassword);
+                encryptedPhrases = data.data;
+                phrasesIv = data.iv;
+            }
+            if (newWallet.index) {
+                let data = await window.electronAPI.encryptWithAES256("" + newWallet.index, appPassword);
+                encryptedIndex = data.data;
+                indexIv = data.iv;
+            }
+
+            let encryptedPrivateKey: string | null = null;
+            let privateKeyIv: string | null = null;
+            if (newWallet.privateKey) {
+                let data = await window.electronAPI.encryptWithAES256(newWallet.privateKey, appPassword);
+                encryptedPrivateKey = data.data;
+                privateKeyIv = data.iv;
+            }
+
+            let walletNetworkData = WalletService.newWalletData(
+                walletName, newWallet, supportedNetworkData,
+                encryptedPhrases, phrasesIv,
+                encryptedIndex, indexIv,
+                encryptedPrivateKey, privateKeyIv
+            );
             if (walletNetworkData.walletData != null && walletNetworkData.networkDataList != null) {
                 $walletListStore = [
                     ...$walletListStore,
@@ -64,6 +108,27 @@
 
 <div class="CenterColumnFlex AddWalletWrapper">
     {#if showPhase === 0}
+        <div style="height: 15px; width: 10px;"></div>
+
+        <div class="CenterRowFlex" style="width: 100%;">
+            <div class="CenterRowFlex" style="width: 40%; text-align: center;">
+                Password
+            </div>
+            <div class="CenterRowFlex" style="width: 5%; text-align: center;">
+                :
+            </div>
+            <div class="CenterRowFlex" style="width: 55%; text-align: center;">
+                <input bind:value="{appPassword}" type="password">
+            </div>
+        </div>
+
+        <div style="height: 40px; width: 10px;"></div>
+
+        <div class="CenterRowFlex ErrorMessageHolder">{passError}</div>
+        <button on:click={verifyPassword}>Confirm</button>
+
+        <div style="height: 15px; width: 10px;"></div>
+    {:else if showPhase === 1}
         <div class="CenterColumnFlex" style="width: 100%; height: 40%; justify-content: space-around;">
             <div class="CenterRowFlex" style="width: 100%; text-align: center; font-size: 30px;">
                 Wallet Name:
@@ -71,7 +136,7 @@
             <input bind:value={walletName} placeholder="Wallet Name" type="text"/>
         </div>
         <button on:click={goToNextPhase}>Confirm</button>
-    {:else if showPhase === 1}
+    {:else if showPhase === 2}
         {#each supportedNetworkList as network}
             <div class="CenterRowFlex WalletTypeDataHolderWrapper">
                 <button class="CenterRowFlex WalletTypeDataHolder"
@@ -81,7 +146,7 @@
                 </button>
             </div>
         {/each}
-    {:else if showPhase === 2}
+    {:else if showPhase === 3}
         <Loader></Loader>
     {/if}
 </div>
@@ -95,6 +160,13 @@
         border-radius: 10px;
 
         justify-content: space-around;
+    }
+
+    .ErrorMessageHolder {
+        height: 30px;
+        text-align: center;
+        font-size: 25px;
+        color: #FF3D00;
     }
 
     .WalletTypeDataHolderWrapper {
@@ -146,6 +218,18 @@
         height: 50px;
         width: 150px;
         font-size: 30px;
+
+        transition: 0.2s width, height;
+    }
+
+    button:hover {
+        height: 55px;
+        width: 155px;
+    }
+
+    button:active {
+        height: 45px;
+        width: 145px;
     }
 
     input:active {

@@ -79,6 +79,18 @@
         height: 50px;
         width: 150px;
         font-size: 30px;
+
+        transition: 0.2s width, height;
+    }
+
+    button:hover {
+        height: 55px;
+        width: 155px;
+    }
+
+    button:active {
+        height: 45px;
+        width: 145px;
     }
 
     input:active {

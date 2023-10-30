@@ -4,7 +4,6 @@
 	"version": "0.0.1",
 	"private": true,
 	"main": "./electron/main.js",
-	"type": "module",
 	"scripts": {
 		"vite:dev": "vite dev",
 		"vite:build": "vite build",
